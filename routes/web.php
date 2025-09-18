@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleRedirectController;
 use App\Http\Middleware\RoleMiddleware;
@@ -41,6 +42,11 @@ Route::middleware(['auth', RoleMiddleware::class . ':student'])->group(function 
     Route::get('/student/dashboard', function () {
         return view('student.dashboard');
     })->name('student.dashboard');
+});
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
+    Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
 });
 
 require __DIR__.'/auth.php';
