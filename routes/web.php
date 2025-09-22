@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleRedirectController;
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Controllers\Admin\ScheduleController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -47,6 +48,10 @@ Route::middleware(['auth', RoleMiddleware::class . ':student'])->group(function 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
+});
+
+Route::middleware(['auth', 'isAdmin'])->group(function () {
+    Route::resource('schedules', ScheduleController::class);
 });
 
 require __DIR__.'/auth.php';
