@@ -21,18 +21,8 @@ class UserSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        User::create([
-            'name' => 'Teacher User',
-            'email' => 'hadanghiep001@gmail.com',
-            'password' => Hash::make('123456'),
-            'role' => 'teacher',
-        ]);
+        User::factory()->count(12)->teacher()->create();
 
-        User::create([
-            'name' => 'Student User',
-            'email' => 'hiepha.sgeovn@gmail.com',
-            'password' => Hash::make('123456'),
-            'role' => 'student',
-        ]);
+        User::factory()->count(200)->student()->create();
     }
 }

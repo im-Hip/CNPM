@@ -6,6 +6,8 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Teacher;
+use App\Models\Subject;
+use Illuminate\Support\Facades\DB;
 
 class TeacherSeeder extends Seeder
 {
@@ -15,15 +17,20 @@ class TeacherSeeder extends Seeder
     public function run(): void
     {
         $users = User::where('role', 'teacher')->get();
+        $subjects = Subject::pluck('id')->toArray();
+        $levels  = ['Bachelor', 'Master', 'PhD'];
 
+        $i = 1;
         foreach ($users as $user) {
-            Teacher::create([
-                'user_id' => $user->id,
-                'phone' => fake()->numerify('0#########'),
-                'subject' => fake()->randomElement(['Math','Physics','Chemistry','History','Geography','Biology','English','Civic education','Technology','National Defense Education','Physical Education','Computer Science']),
+            DB::table('teachers')->insert([
+                'id'         => $user->id, // PK đồng thời là FK đến users
+                'teacher_id' => 'GV' . str_pad($i, 3, '0', STR_PAD_LEFT),
+                'subject_id' => fake()->randomElement($subjects),
+                'level'      => fake()->randomElement($levels),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
+            $i++;
         }
-
-        $this->command->info("Success!");
     }
 }

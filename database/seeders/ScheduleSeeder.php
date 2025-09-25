@@ -5,7 +5,11 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
+use App\Models\Schedule;
+use App\Models\Teacher;
+use App\Models\Classes;
+use App\Models\Subject;
+use App\Models\Room;
 
 class ScheduleSeeder extends Seeder
 {
@@ -14,33 +18,15 @@ class ScheduleSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create();
-
-        $subjects = [
-            'Programming', 'Data Structures', 'Operating Systems', 'Database Management', 'Cybersecurity', 'Artificial Intelligence', 
-            'Cloud Computing', 'Data Analytics'
-        ];
-
-        $sessions = [
-            ['06:30:00', '09:00:00'],
-            ['09:10:00', '11:40:00'],
-            ['12:30:00', '15:00:00'],
-            ['15:10:00', '17:40:00'],
-        ];
-
-        for ($i = 0; $i<10; $i++){
-            $subject = $faker->randomElement($subjects);
-            $session = $faker->randomElement($sessions);
-
-            DB::table('schedules')->insert([
-                'subject'    => $subject,
-                'teacher'    => $faker->name,
-                'date'       => $faker->dateTimeBetween('2020-01-01', 'now')->format('Y-m-d'),
-                'start_time' => $session[0],
-                'end_time'   => $session[1],
-                'room'       => $faker->randomElement(['A', 'B', 'C', 'I']) . $faker->numberBetween(101, 310),
-                'created_at' => now(),
-                'updated_at' => now(),
+        for ($i=1; $i<=10; $i++){
+            Schedule::create([
+                'teacher_id' => Teacher::inRandomOrder()->first()->id,
+                'class_id' => Classes::inRandomOrder()->first()->id,
+                'room_id' => Room::inRandomOrder()->first()->id,
+                'day_of_week' => fake()->randomElement(['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']),
+                'start_time' => 1,
+                'end_time'   => 2,
+                'note' => NULL,
             ]);
         }
     }
