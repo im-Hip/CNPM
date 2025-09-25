@@ -17,6 +17,7 @@
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
         </form>
+        <a href="{{ route('schedules.index') }}" class="bg-green-500 text-white px-4 py-2 rounded mr-2 ml-3">Quản lý lịch học</a>
     </div>
 </body>
 </html>
