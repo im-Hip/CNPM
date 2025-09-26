@@ -8,7 +8,7 @@ use App\Http\Middleware\RoleMiddleware;
 
 Route::get('/', function () {
     return view('welcome');
-});
+}) ->name('home');
 
 // Route /dashboard redirect theo role
 Route::get('/dashboard', [RoleRedirectController::class, 'redirect'])->middleware('auth')->name('dashboard');
