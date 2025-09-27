@@ -7,6 +7,7 @@ use App\Http\Controllers\RoleRedirectController;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\TeacherController;
+use App\Http\Controllers\Admin\RoomController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -57,4 +58,7 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
 
 Route::get('/teachers/by-subject/{subject_id}', [TeacherController::class, 'getBySubject']);
 
+Route::get('/rooms/by-subject/{subjectId}/{classId}', [RoomController::class, 'getBySubject']);
+
+Route::get('/subjects/by-class/{classId}', [ScheduleController::class, 'getSubjectsByClass']);
 require __DIR__.'/auth.php';

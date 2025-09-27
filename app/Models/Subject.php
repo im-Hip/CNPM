@@ -12,4 +12,8 @@ class Subject extends Model
         'subject_id',
         'number_of_periods'
     ];
+
+    public function teachers(){
+        return $this->hasMany(Teacher::class);
+    }
 }
