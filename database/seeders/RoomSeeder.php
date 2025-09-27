@@ -36,16 +36,13 @@ class RoomSeeder extends Seeder
 
         Room::create([
             'name' => 'computer room 1',
+            'type' => 'computer',
             'capacity' => 50
         ]);
 
         Room::create([
-            'name' => 'seminar room 1',
-            'capacity' => 50
-        ]);
-
-        Room::create([
-            'name' => 'computer room 2',
+            'name' => 'laboratory 1',
+            'type' => 'lab',
             'capacity' => 50
         ]);
     }

@@ -19,13 +19,16 @@ class ScheduleSeeder extends Seeder
     public function run(): void
     {
         for ($i=1; $i<=10; $i++){
+            $class = Classes::inRandomOrder()->first();
+            $start = rand(1,10);
+
             Schedule::create([
                 'teacher_id' => Teacher::inRandomOrder()->first()->id,
-                'class_id' => Classes::inRandomOrder()->first()->id,
-                'room_id' => Room::inRandomOrder()->first()->id,
+                'class_id' => $class->id,
+                'room_id' => $class->room_id,
                 'day_of_week' => fake()->randomElement(['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']),
-                'start_time' => 1,
-                'end_time'   => 2,
+                'start_time' => $start,
+                'end_time'   => $start,
                 'note' => NULL,
             ]);
         }
