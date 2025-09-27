@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleRedirectController;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Controllers\Admin\ScheduleController;
+use App\Http\Controllers\Admin\TeacherController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -53,5 +54,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'isAdmin'])->group(function () {
     Route::resource('schedules', ScheduleController::class);
 });
+
+Route::get('/teachers/by-subject/{subject_id}', [TeacherController::class, 'getBySubject']);
 
 require __DIR__.'/auth.php';

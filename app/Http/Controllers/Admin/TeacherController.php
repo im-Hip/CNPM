@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Teacher;
 
 class TeacherController extends Controller
 {
@@ -75,5 +76,20 @@ class TeacherController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function getBySubject($subject_id)
+    {
+        $teachers = Teacher::with('user')
+            ->where('subject_id', $subject_id)
+            ->get();
+        return response()->json(
+            $teachers->map(function ($t) {
+                return [
+                    'id'   => $t->id,
+                    'name' => $t->user->name, // lấy tên từ users
+                ];
+            })
+        );
     }
 }

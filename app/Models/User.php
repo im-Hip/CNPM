@@ -52,4 +52,8 @@ class User extends Authenticatable
     {
         $this->notify(new CustomResetPassword($token));
     }
+
+    public function teacher(){
+        return $this->hasOne(Teacher::class, 'id');
+    }
 }

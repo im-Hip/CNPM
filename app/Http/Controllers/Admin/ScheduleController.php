@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
+use App\Models\Classes;
+use App\Models\Subject;
+use App\Models\Room;
 
 class ScheduleController extends Controller
 {
@@ -13,8 +16,33 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        $schedules = Schedule::all();
-        return view('admin.schedules.index', compact('schedules'));
+        $schedules = Schedule::with('teacher.subject')->get();
+        $start_periods = [
+            1 => '07h00',
+            2 => '07h50',
+            3 => '08h50',
+            4 => '09h40',
+            5 => '10h30',
+            6 => '13h00',
+            7 => '13h50',
+            8 => '14h50',
+            9 => '15h40',
+            10 => '16h30',
+        ];
+
+        $end_periods = [
+            1 => '07h45',
+            2 => '08h35',
+            3 => '09h35',
+            4 => '10h25',
+            5 => '11h15',
+            6 => '13h45',
+            7 => '14h35',
+            8 => '15h35',
+            9 => '16h25',
+            10 => '17h15',
+        ];
+        return view('admin.schedules.index', compact('schedules', 'start_periods', 'end_periods'));
     }
 
     /**
@@ -22,7 +50,11 @@ class ScheduleController extends Controller
      */
     public function create()
     {
-        return view('admin.schedules.create');
+        $classes = Classes::all();
+        $subjects = Subject::all();
+        $rooms = Room::all();
+        
+        return view('admin.schedules.create', compact('classes', 'subjects', 'rooms'));
     }
 
     /**

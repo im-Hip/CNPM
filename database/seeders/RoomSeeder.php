@@ -15,27 +15,27 @@ class RoomSeeder extends Seeder
     public function run(): void
     {
         Room::create([
-            'name' => 'classroom 1',
+            'name' => '10A1',
             'capacity' => 50
         ]);
 
         Room::create([
-            'name' => 'classroom 2',
+            'name' => '10A2',
             'capacity' => 50
         ]);
 
         Room::create([
-            'name' => 'classroom 3',
+            'name' => '11A1',
             'capacity' => 50
         ]);
 
         Room::create([
-            'name' => 'classroom 4',
+            'name' => '12A1',
             'capacity' => 50
         ]);
 
         Room::create([
-            'name' => 'classroom 5',
+            'name' => 'computer room 1',
             'capacity' => 50
         ]);
 
@@ -45,7 +45,7 @@ class RoomSeeder extends Seeder
         ]);
 
         Room::create([
-            'name' => 'computer room 1',
+            'name' => 'computer room 2',
             'capacity' => 50
         ]);
     }
