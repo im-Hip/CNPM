@@ -52,4 +52,26 @@ class User extends Authenticatable
     {
         $this->notify(new CustomResetPassword($token));
     }
+
+    public function notifications()
+    {
+        return $this->morphMany(Notification::class, 'recipient');
+    }
+    public function sentNotifications()
+    {
+        return $this->hasMany(Notification::class, 'sender_id');
+    }
+
+    // Trong class User
+    public function teacher() {
+        return $this->hasOne(Teacher::class, 'id');
+    }
+    
+    public function student() {
+        return $this->hasOne(Student::class, 'id');
+    }
+    
+    public function schedules() {  // Cho teacher
+        return $this->hasManyThrough(Schedule::class, Teacher::class, 'id', 'teacher_id');
+    }
 }
