@@ -11,7 +11,7 @@ use App\Http\Controllers\TeacherAssignmentController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome');         //hien thi trang chu
 })->name('home');
 
 // Auth middleware group (chung cho tất cả user: student/teacher/admin)
