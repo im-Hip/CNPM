@@ -493,9 +493,9 @@
         <div class="top-bar">
             <div class="container">
                 <div class="contact-info">
-                    <span>📅 Mon - Fri / 9:00AM - 06:00PM</span>
-                    <span>📍 100 Mainstreet Center, Sydney</span>
-                    <span>📞 +61(0) 333 9596</span>
+                    <span>📅 Mon - Sat / 6:30AM - 5:30PM</span>
+                    <span>📍 280 An Dương Vương, Phường Chợ Quán, Tp.Hồ Chí Minh</span>
+                    <span>📞 028 3835 2020</span>
                 </div>
                 <div class="auth-links">
                     <a href="{{ route('login') }}" style="margin-right: 10px;">👤 Login</a>
@@ -510,11 +510,11 @@
                 <a href="{{ route('home') }}" class="logo">EduLearn</a>
                 <ul class="nav-menu">
                     <li><a href="{{ route('home') }}">Home</a></li>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Exam</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="{{ route('home') }}">About Us</a></li>
+                    <li><a href="{{ route('home') }}">Exam</a></li>
+                    <li><a href="{{ route('home') }}">Contact</a></li>
                 </ul>
-                <button class="search-btn" onclick="alert('Search functionality would be implemented here')">🔍</button>
+                <button class="search-btn">🔍</button>
                 <button class="hamburger">☰</button>
             </div>
         </nav>
@@ -529,7 +529,6 @@
             
             <div class="hero-content">
                 <h1>Learn Excellence in Teaching</h1>
-                <h1>Im gay</h1>
                 <div class="hero-subtitle">COURSES / EVENTS / E-LEARNING</div>
                 <div class="hero-logo"></div>
             </div>
@@ -549,17 +548,17 @@
                 <h3>Quick Links</h3>
                 <ul>
                     <li><a href="{{ route('home') }}">Home</a></li>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Exam</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="{{ route('home') }}">About Us</a></li>
+                    <li><a href="{{ route('home') }}">Exam</a></li>
+                    <li><a href="{{ route('home') }}">Contact</a></li>
                 </ul>
             </div>
             <div class="footer-column">
                 <h3>Contact Us</h3>
                 <div class="contact-info">
-                    <span>📅 Mon - Fri / 9:00AM - 06:00PM</span>
-                    <span>📍 100 Mainstreet Center, Sydney</span>
-                    <span>📞 +61(0) 333 9596</span>
+                    <span>📅 Mon - Sat / 6:30AM - 5:30PM</span>
+                    <span>📍 280 An Dương Vương, Phường Chợ Quán, Tp.Hồ Chí Minh</span>
+                    <span>📞 028 3835 2020</span>
                 </div>
             </div>
         </div>
