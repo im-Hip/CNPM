@@ -15,64 +15,68 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
+    html, body {
+        height: 100%;
+        margin: 0;
+        font-family: sans-serif;
+    }
 
-        body {
-            background-image: url('{{ asset("images/bg-login.jpg") }}');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            color: white;
-            font-family: sans-serif;
-        }
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-image: url('{{ asset("images/bg-login.jpg") }}');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+    }
 
-        .bg-overlay {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            padding: 2vh 1rem;
-            gap: 2rem;
-        }
+    .bg-overlay {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem 1rem;
+        gap: 1rem;
+    }
 
-        .footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 0.75rem;
-            font-weight: 300;
-            color: #fff;
-        }
+    .footer {
+        width: 100%;
+        text-align: center;
+        font-size: 0.6rem;
+        font-weight: 300;
+        color: #fff;
+        padding: 1rem 0;
+    }
 
-        h1.title-n9 {
-            font-size: 4rem;
-            font-weight: 800;
-            text-align: center;
-            margin-bottom: 0.2rem;
-        }
+    h1.title-n9 {
+        font-size: 4rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 0.2rem;
+    }
 
-        p.sub-title {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            margin-top: 0;
-        }
+    p.sub-title {
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: center;
+        margin-top: 0;
+    }
 
-        .login-card {
-            background-color: white;
-            color: #333;
-            border-radius: 0.5rem;
-            box-shadow: -15px 0 25px rgba(0,0,0,0.5);
-            max-width: 400px;
-            width: 100%;
-            padding: 2rem;
-        }
-    </style>
+    .login-card {
+        background-color: white;
+        color: #333;
+        border-radius: 0.5rem;
+        box-shadow: -15px 0 25px rgba(0,0,0,0.5);
+        max-width: 400px;
+        width: 100%;
+        padding: 2rem;
+    }
+</style>
+
 </head>
 <body>
     <div class="bg-overlay">
