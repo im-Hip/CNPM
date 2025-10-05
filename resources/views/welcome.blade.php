@@ -529,6 +529,7 @@
             
             <div class="hero-content">
                 <h1>Learn Excellence in Teaching</h1>
+                <h1>Im gay</h1>
                 <div class="hero-subtitle">COURSES / EVENTS / E-LEARNING</div>
                 <div class="hero-logo"></div>
             </div>
