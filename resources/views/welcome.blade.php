@@ -563,7 +563,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2025 EduLearn. All rights reserved.
+            &copy; 2025 Quản Lý Lịch Học. All rights reserved.
         </div>
     </footer>
 
