@@ -2,35 +2,48 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use App\Models\Schedule;
-use App\Models\Teacher;
 use App\Models\Classes;
 use App\Models\Subject;
 use App\Models\Room;
+use App\Models\Teacher;
 
 class ScheduleSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        for ($i=1; $i<=10; $i++){
-            $class = Classes::inRandomOrder()->first();
-            $start = rand(1,10);
+        $class10A1 = Classes::where('name', '10A1')->first();
+        $math = Subject::where('name', 'Math')->first();
+        $room101 = Room::where('name', 'Room 101')->first();
+        $teacherA = Teacher::find(User::where('email', 'teacher_a@example.com')->first()->id);
 
-            Schedule::create([
-                'teacher_id' => Teacher::inRandomOrder()->first()->id,
-                'class_id' => $class->id,
-                'room_id' => $class->room_id,
-                'day_of_week' => fake()->randomElement(['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']),
-                'start_time' => $start,
-                'end_time'   => $start,
-                'note' => NULL,
-            ]);
-        }
+        Schedule::create([
+            'class_id' => $class10A1->id,
+            'subject_id' => $math->id,
+            'teacher_id' => $teacherA->id,
+            'room_id' => $room101->id,
+            'day_of_week' => 1,
+            'class_period' => 1,
+            'note' => 'Sample note',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $class11A1 = Classes::where('name', '11A1')->first();
+        $science = Subject::where('name', 'Science')->first();
+        $room102 = Room::where('name', 'Room 102')->first();
+
+        Schedule::create([
+            'class_id' => $class11A1->id,
+            'subject_id' => $science->id,
+            'teacher_id' => $teacherA->id,
+            'room_id' => $room102->id,
+            'day_of_week' => 2,
+            'class_period' => 2,
+            'note' => 'Sample note 2',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }

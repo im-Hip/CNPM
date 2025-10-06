@@ -34,4 +34,18 @@ class Student extends Model
     {
         return $this->belongsTo(Classes::class, 'class_id');
     }
+
+    public function notifications()
+    {
+        return $this->morphMany(Notification::class, 'recipient');
+    }
+
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class, 'class_id', 'class_id');
+    }
+
+    public function schedules() {
+        return $this->hasManyThrough(Schedule::class, Classes::class, 'class_id', 'class_id');
+    }
 }

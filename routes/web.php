@@ -4,57 +4,92 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleRedirectController;
-use App\Http\Middleware\RoleMiddleware;
-use App\Http\Controllers\Admin\ScheduleController;
-use App\Http\Controllers\Admin\TeacherController;
+use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\TeacherAssignmentController;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return view('welcome');
-}) ->name('home');
+    return view('welcome');         //hien thi trang chu
+})->name('home');
 
-// Route /dashboard redirect theo role
-Route::get('/dashboard', [RoleRedirectController::class, 'redirect'])->middleware('auth')->name('dashboard');
+// Auth middleware group (chung cho tất cả user: student/teacher/admin)
+Route::middleware(['auth'])->group(function () {
+    // Notification routes
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/create', [NotificationController::class, 'create'])->name('notifications.create');
+    Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');
+    Route::get('/notifications/history', [NotificationController::class, 'history'])->name('notifications.history');
+    Route::get('/search-recipients', [NotificationController::class, 'searchRecipients'])->name('search-recipients');
 
-// Profile routes
+    // Dashboard chung
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    // Assignment routes
+    Route::get('/assignments/create', [AssignmentController::class, 'create'])->name('assignments.create');
+    Route::post('/assignments', [AssignmentController::class, 'store'])->name('assignments.store');
+    Route::get('/assignments', [AssignmentController::class, 'index'])->name('assignments.index');
+
+    // Schedule index (xem lịch cho tất cả user)
+    Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules.index');
+
+    Route::get('/schedules/export/pdf/{class_id?}', [ScheduleController::class, 'exportPdf'])->name('schedules.export.pdf');
+    Route::get('/schedules/teacher/export/pdf', [ScheduleController::class, 'exportTeacherPdf'])->name('schedules.teacher.export.pdf');
+});
+
+// Profile routes (auth)
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Điều hướng sau khi login (có thể giữ hoặc xóa nếu đã dùng /dashboard)
+// Role redirect (auth)
 Route::get('/redirect', [RoleRedirectController::class, 'redirect'])->middleware('auth');
 
-// Routes dashboard theo vai trò dùng middleware role mới
-Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
-
-    // Route cho admin tạo users...
-});
-
-Route::middleware(['auth', RoleMiddleware::class . ':teacher'])->group(function () {
-    Route::get('/teacher/dashboard', function () {
-        return view('teacher.dashboard');
-    })->name('teacher.dashboard');
-});
-
-Route::middleware(['auth', RoleMiddleware::class . ':student'])->group(function () {
-    Route::get('/student/dashboard', function () {
-        return view('student.dashboard');
-    })->name('student.dashboard');
-});
-
+// Admin-specific routes (users)
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
 });
 
+// Admin Schedule management (CRUD + AJAX + API) – Giữ cũ
 Route::middleware(['auth', 'isAdmin'])->group(function () {
-    Route::resource('schedules', ScheduleController::class);
+    // New: Full page CRUD
+    Route::get('/schedules/create', [ScheduleController::class, 'create'])->name('schedules.create');
+    Route::post('/schedules', [ScheduleController::class, 'store'])->name('schedules.store');
+    
+    // Inline AJAX (giữ nếu muốn, hoặc xóa)
+    Route::post('/schedules/add', [ScheduleController::class, 'storeInline'])->name('schedules.store-inline');
+    Route::post('/schedules/{schedule}/update', [ScheduleController::class, 'updateInline'])->name('schedules.update-inline');
+    Route::delete('/schedules/{schedule}', [ScheduleController::class, 'destroyInline'])->name('schedules.destroy-inline');
+    // THÊM MỚI: Edit/Update
+    Route::get('/schedules/{schedule}/edit', [ScheduleController::class, 'edit'])->name('schedules.edit');
+    Route::put('/schedules/{schedule}', [ScheduleController::class, 'update'])->name('schedules.update');
+    
+    // THÊM MỚI: Delete
+    Route::delete('/schedules/{schedule}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
+    // API for options (giữ)
+    Route::get('/api/subjects/{class_id}', [ScheduleController::class, 'getSubjectsForClass'])->name('api.subjects-per-class');
+    Route::get('/api/teacher/{class_id}/{subject_id}', [ScheduleController::class, 'getTeacherForClassSubject'])->name('api.teacher-per-class-subject');
+    Route::get('/api/rooms', function () { 
+        return response()->json(\App\Models\Room::all(['id', 'name'])); 
+    })->name('api.rooms');
 });
 
-Route::get('/teachers/by-subject/{subject_id}', [TeacherController::class, 'getBySubject']);
+// Teacher Assignment routes (admin only – resource đầy đủ)
+Route::middleware(['auth', 'isAdmin'])->group(function () {
+    Route::resource('teacher_assignments', TeacherAssignmentController::class);
+});
 
+// Logout (custom – không conflict với auth.php)
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect('/')->with('success', 'Logged out successfully.');
+})->name('logout');
+
+// Auth routes (Breeze/Jetstream – handle login/register/logout)
 require __DIR__.'/auth.php';
