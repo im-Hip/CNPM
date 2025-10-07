@@ -19,7 +19,7 @@ class Teacher extends Model {
     }
 
     public function classes() {
-        return $this->belongsToMany(ClassModel::class, 'teacher_assignments', 'teacher_id', 'class_id');
+        return $this->belongsToMany(Classes::class, 'teacher_assignments', 'teacher_id', 'class_id');
     }
 
     public function schedules() {

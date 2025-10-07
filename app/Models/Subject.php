@@ -7,7 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Subject extends Model
 {
     protected $table = 'subjects';
-    protected $fillable = ['name'];  // Thêm nếu cần
+    protected $fillable = [
+        'name',
+        'subject_id',
+        'number_of_periods'
+    ];  // Thêm nếu cần
 
     // FIX: Relationship với assignments (phân công GV cho môn)
     public function assignments()

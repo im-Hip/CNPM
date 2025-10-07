@@ -8,6 +8,7 @@ use App\Models\Classes;
 use App\Models\Subject;
 use App\Models\Room;
 use App\Models\Teacher;
+use App\Models\User;
 
 class ScheduleSeeder extends Seeder
 {

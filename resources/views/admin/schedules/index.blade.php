@@ -4,7 +4,7 @@
 <div class="container">
     <h1 class="mb-2">Quản lý lịch học</h1>
     <a href="{{ route('schedules.create') }}" class="bg-green-500 text-white px-4 py-2 rounded mr-2 ml-3 mb-4 inline-block">Thêm lịch học</a>
-
+    
     @if(session('success'))
     <script>
         alert("{{ session('success') }}");

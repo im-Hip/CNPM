@@ -8,6 +8,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\TeacherAssignmentController;
+use App\Http\Controllers\SubjectController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
@@ -90,6 +91,8 @@ Route::post('/logout', function () {
     Auth::logout();
     return redirect('/')->with('success', 'Logged out successfully.');
 })->name('logout');
+
+Route::resource('subjects', SubjectController::class);
 
 // Auth routes (Breeze/Jetstream – handle login/register/logout)
 require __DIR__.'/auth.php';
