@@ -24,4 +24,16 @@ class Subject extends Model
     {
         return $this->hasMany(Schedule::class, 'subject_id');
     }
+
+    // Relationship với teachers
+    public function teachers()
+    {
+        return $this->hasMany(Teacher::class, 'subject_id');
+    }
+
+    // Relationship với teacher_assignments
+    public function teacher_assignments()
+    {
+        return $this->hasMany(TeacherAssignment::class, 'subject_id');
+    }
 }

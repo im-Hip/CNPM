@@ -115,6 +115,10 @@ class SubjectController extends Controller
     public function destroy(string $id)
     {
         $subject = Subject::findOrFail($id);
+        
+        if($subject->teachers()->exists() || $subject->schedules()->exists() || $subject->teacher_assignments()->exists()){
+            return redirect()->back()->with('error', 'Không thể xóa vì môn học đang được tham chiếu bởi dữ liệu khác!');
+        }
         $subject->delete();
 
         return redirect()->route('subjects.index')->with('success', 'Xóa môn học thành công!');

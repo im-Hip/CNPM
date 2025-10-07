@@ -27,7 +27,7 @@
                 <a href="{{ route('subjects.index') }}" class="bg-yellow-500 text-white p-6 rounded-lg shadow-md hover:bg-green-600 transition text-center flex justify-center items-center font-semibold">
                     📚 Quản Lý Môn Học
                 </a>
-                <a href="{{ route('schedules.index') }}" class="bg-green-500 text-white p-6 rounded-lg shadow-md hover:bg-green-600 transition text-center flex justify-center items-center font-semibold">
+                <a href="{{ route('classes.index') }}" class="bg-green-500 text-white p-6 rounded-lg shadow-md hover:bg-green-600 transition text-center flex justify-center items-center font-semibold">
                     🏫 Quản Lý Lớp Học
                 </a>
                 <a href="{{ route('teacher_assignments.index') }}" class="bg-purple-500 text-white p-6 rounded-lg shadow-md hover:bg-purple-600 transition text-center flex justify-center items-center font-semibold">
