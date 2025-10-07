@@ -94,7 +94,6 @@ Route::post('/logout', function () {
 })->name('logout');
 
 Route::resource('subjects', SubjectController::class);
-Route::resource('classes', ClassController::class);
 
 // Auth routes (Breeze/Jetstream – handle login/register/logout)
 require __DIR__.'/auth.php';

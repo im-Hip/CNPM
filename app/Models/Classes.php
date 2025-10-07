@@ -8,7 +8,7 @@ class Classes extends Model
 {
     protected $table = 'classes';
 
-    protected $fillable = ['name', 'grade'];
+    protected $fillable = ['name', 'grade', 'number_of_students'];
 
     public function teachers()
     {
