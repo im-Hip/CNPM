@@ -15,6 +15,20 @@ class NotificationController extends Controller
 {
     public function index()
     {
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
+            $sentNotifications = Notification::where('sender_id', $user->id)
+                ->orderBy('sent_at', 'desc')
+                ->get()
+                ->groupBy('sent_at')
+                ->map(function ($group) {
+                    return $group->first();
+                });
+
+            return view('notifications.history', compact('sentNotifications'));
+        }
+
         $notifications = Notification::where('recipient_id', Auth::id())
             ->where('recipient_type', 'App\Models\User')
             ->orderBy('sent_at', 'desc')
@@ -154,7 +168,7 @@ class NotificationController extends Controller
     {
         $search = $request->search;
         $role = Auth::user()->role === 'admin' ? ['teacher', 'student'] : 'student';
-        $results = User::whereIn('role', (array) $role)->where('email', 'like', '%'.$search.'%')->get(['id', 'email']);
+        $results = User::whereIn('role', (array) $role)->where('email', 'like', '%' . $search . '%')->get(['id', 'email']);
 
         return response()->json($results);
     }
