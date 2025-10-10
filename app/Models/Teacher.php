@@ -14,7 +14,7 @@ class Teacher extends Model {
         return $this->belongsTo(User::class, 'id');  // Hoặc 'user_id' nếu column khác
     }
 
-    public function assignments() {
+    public function teacherAssignments() {
         return $this->hasMany(TeacherAssignment::class, 'teacher_id');
     }
 

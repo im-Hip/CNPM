@@ -93,7 +93,15 @@ Route::post('/logout', function () {
     return redirect('/')->with('success', 'Logged out successfully.');
 })->name('logout');
 
+//CRUD subject
 Route::resource('subjects', SubjectController::class);
+
+//hoc sinh upload file
+Route::post('/assignments/{id}/upload', [AssignmentController::class, 'uploadFile'])
+    ->name('assignments.upload');
+
+//hien thi danh sach hoc sinh da nop bai
+Route::get('/assignments/{id}', [AssignmentController::class, 'show'])->name('assignments.show');
 
 // Auth routes (Breeze/Jetstream – handle login/register/logout)
 require __DIR__.'/auth.php';

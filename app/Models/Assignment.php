@@ -6,10 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Assignment extends Model
 {
-    protected $fillable = ['title', 'content', 'due_date', 'class_id'];
+    protected $fillable = ['teacherassignment_id', 'title', 'content', 'due_date', 'class_id'];
 
-    public function class()
+    public function teacherAssignment()
     {
-        return $this->belongsTo(Classes::class, 'class_id');
+        return $this->belongsTo(TeacherAssignment::class, 'teacherassignment_id');
+    }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class);
     }
 }
