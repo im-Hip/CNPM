@@ -124,7 +124,7 @@
             </div>
             
             <div class="note-text">
-                <strong>Lưu ý:</strong> Link này sẽ hết hạn sau 10 phút.<br>
+                <strong>Lưu ý:</strong> Link này sẽ hết hạn sau 60 phút.<br>
                 Nếu bạn không yêu cầu điều này, hãy bỏ qua email này.
             </div>
         </div>
