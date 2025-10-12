@@ -1,105 +1,190 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Notification</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-</head>
-<body>
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl mb-4">Create Notification</h1>
-        
-        @if (session('success'))
-            <div class="bg-green-100 text-green-700 p-2 mb-4 rounded">{{ session('success') }}</div>
-        @endif
-        
-        @if (session('error'))
-            <div class="bg-red-100 text-red-700 p-2 mb-4 rounded">{{ session('error') }}</div>
-        @endif
-        
-        @if ($errors->any())
-            <div class="bg-red-100 text-red-700 p-2 mb-4 rounded">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+@extends('layouts.app')
 
-        <form action="{{ route('notifications.store') }}" method="POST">
-            @csrf
-            <div class="mb-4">
-                <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                <input type="text" name="title" id="title" class="mt-1 block w-full border-gray-300 rounded-md @error('title') border-red-500 @enderror" value="{{ old('title') }}" required>
-                @error('title')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-            <div class="mb-4">
-                <label for="content" class="block text-sm font-medium text-gray-700">Content</label>
-                <textarea name="content" id="content" class="mt-1 block w-full border-gray-300 rounded-md @error('content') border-red-500 @enderror" required>{{ old('content') }}</textarea>
-                @error('content')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-            <div class="mb-4">
-                <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
-                <select name="type" id="type" class="mt-1 block w-full border-gray-300 rounded-md @error('type') border-red-500 @enderror" required>
-                    <option value="exam" {{ old('type') == 'exam' ? 'selected' : '' }}>Exam</option>
-                    <option value="assignment" {{ old('type') == 'assignment' ? 'selected' : '' }}>Assignment</option>
-                    <option value="event" {{ old('type') == 'event' ? 'selected' : '' }}>Event</option>
-                    <option value="warning" {{ old('type') == 'warning' ? 'selected' : '' }}>Warning</option>
-                    <option value="scholarship" {{ old('type') == 'scholarship' ? 'selected' : '' }}>Scholarship</option>
-                </select>
-                @error('type')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-            <div class="mb-4">
-                <label for="recipient_type" class="block text-sm font-medium text-gray-700">Recipient Type</label>
-                <select name="recipient_type" id="recipient_type" class="mt-1 block w-full border-gray-300 rounded-md @error('recipient_type') border-red-500 @enderror" required onchange="toggleRecipientField()">
-                    @if (Auth::user()->role === 'admin')
-                        <option value="all" {{ old('recipient_type') == 'all' ? 'selected' : '' }}>All (Teachers & Students)</option>
-                        <option value="teachers" {{ old('recipient_type') == 'teachers' ? 'selected' : '' }}>Teachers</option>
-                        <option value="students" {{ old('recipient_type') == 'students' ? 'selected' : '' }}>Students</option>
-                        <option value="class" {{ old('recipient_type') == 'class' ? 'selected' : '' }}>Class</option>
-                        <option value="individual" {{ old('recipient_type') == 'individual' ? 'selected' : '' }}>Individual</option>
-                    @elseif (Auth::user()->role === 'teacher')
-                        <option value="class" {{ old('recipient_type') == 'class' ? 'selected' : '' }}>Class</option>
-                    @endif
-                </select>
-                @error('recipient_type')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-            <div id="recipient_field" class="mb-4" style="display: none;">
-                <label for="recipient_id" class="block text-sm font-medium text-gray-700">Recipient</label>
-                <div id="class_select" class="mb-2" style="display: none;">
-                    <select name="recipient_id" id="recipient_id_class" class="mt-1 block w-full border-gray-300 rounded-md @error('recipient_id') border-red-500 @enderror">
-                        @foreach ($classes as $class)
-                            @if ($class)
-                                <option value="{{ $class->id }}" {{ old('recipient_id') == $class->id ? 'selected' : '' }}>Class {{ $class->name ?? $class->id }}</option>
-                            @endif
+@section('title', 'Gửi thông báo')
+
+@section('content')
+
+    <h1 class="text-3xl font-extrabold text-center pt-8" style="color: #1e3a8a;">
+        Tạo thông báo
+    </h1>
+
+    <!-- Form -->
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white border border-gray-200 rounded-lg shadow-sm" style="padding: 2rem;">
+            
+            @if (session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded" style="margin-bottom: 1.5rem;">
+                    {{ session('success') }}
+                </div>
+            @endif
+            
+            @if (session('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" style="margin-bottom: 1.5rem;">
+                    {{ session('error') }}
+                </div>
+            @endif
+            
+            @if ($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" style="margin-bottom: 1.5rem;">
+                    <ul class="list-disc ml-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
                         @endforeach
-                    </select>
-                    @error('recipient_id')
+                    </ul>
+                </div>
+            @endif
+
+            <!-- Form gửi thông báo -->
+            <form action="{{ route('notifications.store') }}" method="POST">
+                @csrf
+                
+                <!-- Tiêu đề thông báo -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="title" class="block text-sm font-extrabold text-gray-800" style="margin-bottom: 0.5rem;">
+                        Tiêu đề <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           name="title" 
+                           id="title" 
+                           class="w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('title') border-red-500 @enderror" 
+                           style="padding: 0.5rem 1rem;"
+                           placeholder="Nhập tiêu đề thông báo"
+                           value="{{ old('title') }}"
+                           required>
+                    @error('title')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-                {{-- CHỈ HIỂN THỊ INDIVIDUAL CHO ADMIN --}}
-                @if (Auth::user()->role === 'admin')
-                <div id="individual_search" class="mb-2" style="display: none;">
-                    <input type="text" id="recipient_search" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="Search by email..." oninput="searchRecipient()">
-                    <input type="hidden" name="recipient_id" id="recipient_id_individual">
-                    <div id="suggestions" class="border border-gray-300 rounded-md mt-1 max-h-40 overflow-y-auto" style="display: none;"></div>
+                
+                <!-- Nội dung -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="content" class="block text-sm font-extrabold text-gray-800" style="margin-bottom: 0.5rem;">
+                        Nội dung <span class="text-red-500">*</span>
+                    </label>
+                    <textarea name="content" 
+                              id="content" 
+                              rows="4"
+                              class="w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('content') border-red-500 @enderror" 
+                              style="padding: 0.5rem 1rem;"
+                              placeholder="Nhập nội dung thông báo"
+                              required>{{ old('content') }}</textarea>
+                    @error('content')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
-                @endif
-            </div>
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Send</button>
-        </form>
+                
+                <!-- Loại thông báo -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="type" class="block text-sm font-extrabold text-gray-800" style="margin-bottom: 0.5rem;">
+                        Loại thông báo <span class="text-red-500">*</span>
+                    </label>
+                    <select name="type" 
+                            id="type" 
+                            class="w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('type') border-red-500 @enderror" 
+                            style="padding: 0.5rem 1rem;"
+                            required>
+                        <option value="">-- Chọn loại thông báo --</option>
+                        <option value="exam" {{ old('type') == 'exam' ? 'selected' : '' }}>Kiểm tra/Thi</option>
+                        <option value="assignment" {{ old('type') == 'assignment' ? 'selected' : '' }}>Bài tập</option>
+                        <option value="event" {{ old('type') == 'event' ? 'selected' : '' }}>Sự kiện</option>
+                        <option value="warning" {{ old('type') == 'warning' ? 'selected' : '' }}>Cảnh báo</option>
+                        <option value="scholarship" {{ old('type') == 'scholarship' ? 'selected' : '' }}>Học bổng</option>
+                    </select>
+                    @error('type')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                <!-- Đối tượng nhận -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="recipient_type" class="block text-sm font-extrabold text-gray-800" style="margin-bottom: 0.5rem;">
+                        Gửi đến <span class="text-red-500">*</span>
+                    </label>
+                    <select name="recipient_type" 
+                            id="recipient_type" 
+                            class="w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('recipient_type') border-red-500 @enderror" 
+                            style="padding: 0.5rem 1rem;"
+                            required 
+                            onchange="toggleRecipientField()">
+                        @if (Auth::user()->role === 'admin')
+                            <option value="">-- Chọn đối tượng --</option>
+                            <option value="all" {{ old('recipient_type') == 'all' ? 'selected' : '' }}>Tất cả (GV & HS)</option>
+                            <option value="teachers" {{ old('recipient_type') == 'teachers' ? 'selected' : '' }}>Tất cả Giáo viên</option>
+                            <option value="students" {{ old('recipient_type') == 'students' ? 'selected' : '' }}>Tất cả Học sinh</option>
+                            <option value="class" {{ old('recipient_type') == 'class' ? 'selected' : '' }}>Theo lớp</option>
+                            <option value="individual" {{ old('recipient_type') == 'individual' ? 'selected' : '' }}>Cá nhân</option>
+                        @elseif (Auth::user()->role === 'teacher')
+                            <option value="">-- Chọn lớp --</option>
+                            <option value="class" {{ old('recipient_type') == 'class' ? 'selected' : '' }}>Lớp học</option>
+                        @endif
+                    </select>
+                    @error('recipient_type')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                <!-- Chi tiết đối tượng nhận -->
+                <div id="recipient_field" style="display: none; margin-bottom: 1.5rem;">
+                    <label for="recipient_id" class="block text-sm font-extrabold text-gray-800" style="margin-bottom: 0.5rem;">
+                        Chọn cụ thể <span class="text-red-500">*</span>
+                    </label>
+                    
+                    <!-- Chọn lớp -->
+                    <div id="class_select" style="display: none;">
+                        <select name="recipient_id" 
+                                id="recipient_id_class" 
+                                class="w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('recipient_id') border-red-500 @enderror"
+                                style="padding: 0.5rem 1rem;">
+                            <option value="">-- Chọn lớp --</option>
+                            @foreach ($classes as $class)
+                                @if ($class)
+                                    <option value="{{ $class->id }}" {{ old('recipient_id') == $class->id ? 'selected' : '' }}>
+                                        Lớp {{ $class->name ?? $class->id }}
+                                    </option>
+                                @endif
+                            @endforeach
+                        </select>
+                        @error('recipient_id')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    
+                    <!-- Tìm kiếm cá nhân (chỉ cho admin) -->
+                    @if (Auth::user()->role === 'admin')
+                    <div id="individual_search" style="display: none;">
+                        <input type="text" 
+                               id="recipient_search" 
+                               class="w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                               style="padding: 0.5rem 1rem;"
+                               placeholder="Tìm kiếm theo email..." 
+                               oninput="searchRecipient()">
+                        <input type="hidden" name="recipient_id" id="recipient_id_individual">
+                        <div id="suggestions" 
+                             class="border border-gray-300 rounded-md mt-1 max-h-40 overflow-y-auto bg-white" 
+                             style="display: none;"></div>
+                    </div>
+                    @endif
+                </div>
+                
+                <!-- Button -->
+                <div style="margin-top: 2rem;" class="flex justify-end space-x-4">
+    <a href="{{ route('notifications.index') }}" 
+       class="text-white font-bold rounded transition-colors"
+       style="background-color: #2563eb; padding: 0.7rem; min-width: 100px; display: inline-block; text-align: center; text-decoration: none;">
+        Hủy
+    </a>
+    <button type="submit" 
+            class="text-white font-bold rounded transition-colors"
+            style="background-color: #2563eb; padding: 0.7rem; min-width: 100px; display: inline-block;">
+        Gửi
+    </button>
+</div>
+            </form>
+        </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         let previousType = '';
 
@@ -111,7 +196,7 @@
             const classSelectElement = document.getElementById('recipient_id_class');
             const individualHidden = document.getElementById('recipient_id_individual');
 
-            if (recipientType === 'all' || recipientType === 'teachers' || recipientType === 'students') {
+            if (recipientType === 'all' || recipientType === 'teachers' || recipientType === 'students' || recipientType === '') {
                 recipientField.style.display = 'none';
                 classSelect.style.display = 'none';
                 if (individualSearch) individualSearch.style.display = 'none';
@@ -137,7 +222,6 @@
                 }
             }
             previousType = recipientType;
-            console.log('Toggled to:', recipientType, 'Class value:', classSelectElement ? classSelectElement.value : 'N/A');
         }
 
         function searchRecipient() {
@@ -148,7 +232,7 @@
             }
             const suggestions = document.getElementById('suggestions');
             suggestions.style.display = 'block';
-            suggestions.innerHTML = 'Loading...';
+            suggestions.innerHTML = 'Đang tìm...';
 
             axios.get('/search-recipients', {
                 params: { search: search }
@@ -165,16 +249,24 @@
                     };
                     suggestions.appendChild(div);
                 });
-                if (response.data.length === 0) suggestions.innerHTML = 'No results';
+                if (response.data.length === 0) suggestions.innerHTML = '<div class="p-2 text-gray-500">Không tìm thấy</div>';
             }).catch(error => {
-                suggestions.innerHTML = 'Error loading results';
+                suggestions.innerHTML = '<div class="p-2 text-red-500">Lỗi khi tìm kiếm</div>';
             });
         }
 
-        // XÓA DEBUG SUBMIT (KHÔNG CẦN NỮA)
-        // document.querySelector('form').addEventListener('submit', function(e) { ... });
-
+        // Khởi tạo
         toggleRecipientField();
     </script>
-</body>
-</html>
+
+    <!-- Styles -->
+    <style>
+        button[type="submit"]:hover {
+            background-color: #1d4ed8 !important;
+        }
+        
+        #suggestions > div:hover {
+            background-color: #f3f4f6;
+        }
+    </style>
+@endsection

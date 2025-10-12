@@ -18,22 +18,29 @@ class NotificationController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'admin') {
+        // Admin xem tất cả thông báo đã gửi
             $sentNotifications = Notification::where('sender_id', $user->id)
                 ->orderBy('sent_at', 'desc')
-                ->get()
-                ->groupBy('sent_at')
-                ->map(function ($group) {
-                    return $group->first();
-                });
-
-            return view('notifications.history', compact('sentNotifications'));
-        }
-
-        $notifications = Notification::where('recipient_id', Auth::id())
-            ->where('recipient_type', 'App\Models\User')
+                ->paginate(10);
+        } elseif ($user->role === 'teacher') {
+        // Teacher xem thông báo đã gửi của mình
+            $sentNotifications = Notification::where('sender_id', $user->id)
+                ->orderBy('sent_at', 'desc')
+                ->paginate(10);
+        } else {
+        // Student xem thông báo nhận được
+            $sentNotifications = Notification::where(function($query) use ($user) {
+                $query->where('recipient_type', 'App\Models\User')
+                    ->where('recipient_id', $user->id);
+            })
+            ->orWhere('recipient_type', 'all')
+            ->orWhere('recipient_type', 'students')
             ->orderBy('sent_at', 'desc')
-            ->get();
-        return view('notifications.index', compact('notifications'));
+            ->paginate(10);
+    }
+
+        // Dùng chung view history cho tất cả role
+        return view('notifications.history', compact('sentNotifications'));
     }
 
     public function create()
