@@ -3,17 +3,14 @@
 @section('title', 'Lịch sử thông báo')
 
 @section('content')
-    <!-- Tiêu đề hệ thống - màu xanh dương đậm -->
     <h1 class="text-2xl lg:text-3xl font-bold mb-6 text-center" style="color: #1e3a8a;">
         HỆ THỐNG QUẢN LÝ LỊCH HỌC VÀ THÔNG BÁO CHO HỌC SINH
     </h1>
 
-    <!-- Khung lớn chứa nội dung -->
     <div class="bg-white rounded-lg shadow-lg overflow-hidden" style="height: calc(100vh - 180px); display: flex; flex-direction: column;">
         
-        <!-- Thanh header xanh dương - thu nhỏ padding và màu đậm hơn -->
         <div class="px-6 py-3 flex justify-between items-center flex-shrink-0" style="background-color: #1e40af;">
-            <!-- Thông báo mới + icon bên trái -->
+            
             <div class="flex items-center text-white">
                 <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
@@ -21,7 +18,7 @@
                 <span class="text-base font-semibold">Thông báo mới</span>
             </div>
 
-            <!-- Ô tìm kiếm bên phải - fix vị trí icon và bo tròn hơn -->
+            <!-- symbol Tim kiem o day-->
             <div class="relative flex items-center">
                 <svg class="w-4 h-4 absolute left-4 text-gray-500 pointer-events-none" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
@@ -34,7 +31,7 @@
             </div>
         </div>
 
-        <!-- Nội dung thông báo - có scroll -->
+        <!-- Nội dung thông báo có scroll -->
         <div class="flex-1 overflow-y-auto p-6">
             @if ($sentNotifications->isEmpty())
                 <!-- Hiển thị khi chưa có thông báo -->
@@ -104,7 +101,6 @@
             @endif
         </div>
 
-        <!-- Phân trang - ở dưới cùng của khung -->
         @if($sentNotifications instanceof \Illuminate\Pagination\LengthAwarePaginator && $sentNotifications->hasPages())
             <div class="border-t bg-gray-50 px-6 py-4 flex-shrink-0">
                 <div class="flex justify-center">
@@ -133,7 +129,6 @@
 
     <!-- Custom styles -->
     <style>
-        /* Scrollbar styling cho phần nội dung */
         .overflow-y-auto::-webkit-scrollbar {
             width: 8px;
         }
@@ -152,7 +147,7 @@
             background: #a0aec0;
         }
 
-        /* Hiệu ứng hover cho notification items */
+
         .notification-item {
             transition: all 0.2s ease;
         }
@@ -161,7 +156,7 @@
             transform: translateX(4px);
         }
 
-        /* Focus style cho input tìm kiếm */
+        
         #searchInput:focus {
             box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
         }
