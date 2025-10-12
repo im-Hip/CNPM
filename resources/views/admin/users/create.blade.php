@@ -1,126 +1,194 @@
-<!DOCTYPE html>
-<html>
+@extends('layouts.app')
 
-<head>
-    <title>Create User</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'Quản lý người dùng')
 
-<body>
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl mb-4">Create New User</h1>
-        @if (session('success'))
-        <div class="bg-green-100 text-green-700 p-2 mb-4">{{ session('success') }}</div>
-        @endif
-        @if (session('error'))
-        <div class="bg-red-100 text-red-700 p-2 mb-4">{{ session('error') }}</div>
-        @endif
-        @if ($errors->any())
-        <div class="bg-red-100 text-red-700 p-2 mb-4 rounded">
-            <ul class="list-disc ml-4">
-                @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+@section('content')
+    <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-center px-4" style="color: #1e3a8a;">
+        HỆ THỐNG QUẢN LÝ LỊCH HỌC VÀ THÔNG BÁO CHO HỌC SINH
+    </h1>
+
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden" style="height: calc(100vh - 200px); display: flex; flex-direction: column;">
+        
+
+        <div class="bg-blue-600 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between flex-shrink-0">
+            <div class="flex items-center text-white">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                </svg>
+                <span class="text-base sm:text-lg font-semibold">Tạo người dùng mới</span>
+            </div>
         </div>
-        @endif
 
-        <form action="{{ route('admin.users.store') }}" method="POST" onsubmit="return validateForm()">
-            @csrf
-            <div class="mb-4">
-                <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-                <input type="text" name="name" id="name" class="mt-1 block w-full border-gray-300 rounded-md" required>
-            </div>
-            <div class="mb-4">
-                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" name="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md" required>
-            </div>
-            <div class="mb-4">
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" name="password" id="password" class="mt-1 block w-full border-gray-300 rounded-md" required minlength="8">
-                <p id="password-hint" class="text-sm text-gray-500 mt-1">password requires at least 8 characters</p>
-            </div>
-            <div class="mb-4">
-                <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-                <input type="password" name="password_confirmation" id="password_confirmation" class="mt-1 block w-full border-gray-300 rounded-md" required>
-                <p id="confirm-hint" class="text-sm text-red-500 mt-1" style="display: none;">password isn't right</p>
-            </div>
-            <div class="mb-4">
-                <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
-                <select name="role" id="role" class="mt-1 block w-full border-gray-300 rounded-md" required>
-                    <option value="">-- Select Role --</option>
-                    <option value="teacher">Teacher</option>
-                    <option value="student">Student</option>
-                </select>
-            </div>
 
-            <!-- Inputs for TEACHER -->
-            <div id="teacher-fields" class="hidden">
-                <h2 class="text-lg font-semibold mb-2 mt-4">Teacher Information</h2>
-                <div class="mb-4">
-                    <label for="teacher_id" class="block text-sm font-medium text-gray-700">Teacher ID</label>
-                    <input type="text" name="teacher_id" id="teacher_id"
-                        value="{{ $newTeacherId ?? '' }}"
-                        readonly
-                        class="mt-1 block w-full border-gray-300 rounded-md bg-gray-100 cursor-not-allowed">
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6">
+            @if (session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                    {{ session('success') }}
                 </div>
-                <div class="mb-4">
-                    <label for="subject_id" class="block text-sm font-medium text-gray-700">Subject</label>
-                    <select name="subject_id" id="subject_id" class="mt-1 block w-full border-gray-300 rounded-md" required>
-                        <option value="">-- Select Subject --</option>
-                        @foreach ($subjects as $subject)
-                        <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+            @endif
+            
+            @if (session('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {{ session('error') }}
+                </div>
+            @endif
+            
+            @if ($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <ul class="list-disc ml-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
                         @endforeach
-                    </select>
+                    </ul>
                 </div>
-                <div class="mb-4">
-                    <label for="level" class="block text-sm font-medium text-gray-700">Level</label>
-                    <select name="level" id="level" class="mt-1 block w-full border-gray-300 rounded-md" required>
-                        <option value="">-- Select Level --</option>
-                        <option value="Master">Master</option>
-                        <option value="Bachelor">Bachelor</option>
-                        <option value="PhD">PhD</option>
-                    </select>
-                </div>
-            </div>
+            @endif
 
-            <!-- Inputs for STUDENT -->
-            <div id="student-fields" class="hidden">
-                <h2 class="text-lg font-semibold mb-2 mt-4">Student Information</h2>
-                <div class="mb-4">
-                    <label for="student_id" class="block text-sm font-medium text-gray-700">Student ID</label>
-                    <input type="text" name="student_id" id="student_id"
-                        value="{{ $newStudentId ?? '' }}"
-                        readonly
-                        class="mt-1 block w-full border-gray-300 rounded-md bg-gray-100 cursor-not-allowed">
+            <!-- Form tạo user -->
+            <form action="{{ route('admin.users.store') }}" method="POST" onsubmit="return validateForm()" class="max-w-2xl mx-auto">
+                @csrf
+                
+                
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h2 class="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">Thông tin cơ bản</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Họ và tên</label>
+                            <input type="text" name="name" id="name" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                   required>
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" name="email" id="email" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                   required>
+                        </div>
+                        
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                            <input type="password" name="password" id="password" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                   required minlength="8">
+                            <p class="text-xs text-gray-500 mt-1">Mật khẩu tối thiểu 8 ký tự</p>
+                        </div>
+                        
+                        <div>
+                            <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu</label>
+                            <input type="password" name="password_confirmation" id="password_confirmation" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                   required>
+                            <p id="confirm-hint" class="text-xs text-red-500 mt-1" style="display: none;">Mật khẩu không khớp</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Vai trò</label>
+                        <select name="role" id="role" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                required>
+                            <option value="">-- Chọn vai trò --</option>
+                            <option value="teacher">Giáo viên</option>
+                            <option value="student">Học sinh</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <label for="day_of_birth" class="block text-sm font-medium text-gray-700">Day of Birth</label>
-                    <input type="date" name="day_of_birth" id="day_of_birth" class="mt-1 block w-full border-gray-300 rounded-md" required>
-                </div>
-                <div class="mb-4">
-                    <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
-                    <select name="gender" id="gender" class="mt-1 block w-full border-gray-300 rounded-md" required>
-                        <option value="">-- Select Gender --</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="class_id" class="block text-sm font-medium text-gray-700">Class Id</label>
-                    <select name="class_id" id="class_id" class="mt-1 block w-full border-gray-300 rounded-md" required>
-                        <option value="">-- Select Class --</option>
-                        @foreach ($classes as $class)
-                        <option value="{{ $class->id }}">{{ $class->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
 
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Create</button>
-        </form>
+                <!-- Thông tin GV -->
+                <div id="teacher-fields" class="hidden bg-blue-50 rounded-lg p-4 mb-6">
+                    <h2 class="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">Thông tin Giáo viên</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="teacher_id" class="block text-sm font-medium text-gray-700 mb-1">Mã giáo viên</label>
+                            <input type="text" name="teacher_id" id="teacher_id"
+                                   value="{{ $newTeacherId ?? '' }}"
+                                   readonly
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
+                        </div>
+                        
+                        <div>
+                            <label for="subject_id" class="block text-sm font-medium text-gray-700 mb-1">Môn học</label>
+                            <select name="subject_id" id="subject_id" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">-- Chọn môn học --</option>
+                                @foreach ($subjects as $subject)
+                                    <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="level" class="block text-sm font-medium text-gray-700 mb-1">Trình độ</label>
+                            <select name="level" id="level" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">-- Chọn trình độ --</option>
+                                <option value="Master">Thạc sĩ</option>
+                                <option value="Bachelor">Cử nhân</option>
+                                <option value="PhD">Tiến sĩ</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin HS -->
+                <div id="student-fields" class="hidden bg-green-50 rounded-lg p-4 mb-6">
+                    <h2 class="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">Thông tin Học sinh</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="student_id" class="block text-sm font-medium text-gray-700 mb-1">Mã học sinh</label>
+                            <input type="text" name="student_id" id="student_id"
+                                   value="{{ $newStudentId ?? '' }}"
+                                   readonly
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
+                        </div>
+                        
+                        <div>
+                            <label for="day_of_birth" class="block text-sm font-medium text-gray-700 mb-1">Ngày sinh</label>
+                            <input type="date" name="day_of_birth" id="day_of_birth" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Giới tính</label>
+                            <select name="gender" id="gender" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">-- Chọn giới tính --</option>
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="class_id" class="block text-sm font-medium text-gray-700 mb-1">Lớp</label>
+                            <select name="class_id" id="class_id" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">-- Chọn lớp --</option>
+                                @foreach ($classes as $class)
+                                    <option value="{{ $class->id }}">{{ $class->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nút submit -->
+                <div class="flex justify-center mt-6">
+                    <button type="submit" 
+                    class="flex items-center px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
+                        </svg>
+                        Tạo người dùng
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
+    <!-- Script -->
     <script>
         // Ẩn/hiện input theo vai trò
         const roleSelect = document.getElementById('role');
@@ -130,7 +198,7 @@
         roleSelect.addEventListener('change', function() {
             const role = this.value;
 
-            //Ẩn/hiện các phần
+            // Ẩn/hiện các phần
             teacherFields.classList.toggle('hidden', role !== 'teacher');
             studentFields.classList.toggle('hidden', role !== 'student');
 
@@ -157,14 +225,14 @@
 
             if (password !== confirmPassword) {
                 confirmHint.style.display = 'block';
-                return false; // Ngăn form submit nếu mật khẩu không khớp
+                return false;
             } else {
                 confirmHint.style.display = 'none';
                 return true;
             }
         }
 
-        // Kiểm tra realtime khi nhập
+        // check realtime khi nhập
         document.getElementById('password_confirmation').addEventListener('input', function() {
             const password = document.getElementById('password').value;
             const confirmPassword = this.value;
@@ -177,6 +245,24 @@
             }
         });
     </script>
-</body>
 
-</html>
+    <style>
+        /* Scrollbar styling */
+        .overflow-y-auto::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .overflow-y-auto::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .overflow-y-auto::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        
+        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+@endsection
