@@ -1,7 +1,7 @@
 <x-guest-layout>
     <!-- Tiêu đề "ĐĂNG KÝ TÀI KHOẢN" -->
-    <h2 class="text-3xl font-extrabold text-center text-blue-600 mb-6">
-        ĐĂNG KÝ TÀI KHOẢN
+    <h2 class="text-4xl font-extrabold text-center text-blue-600 mb-6">
+        ĐĂNG KÝ
     </h2>
 
     <form method="POST" action="{{ route('register') }}">

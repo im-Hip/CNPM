@@ -1,9 +1,9 @@
-@extends('layouts.app')
+<!-- @extends('layouts.app')
 
 @section('content')
     <h1 class="text-3xl font-bold mb-6 text-gray-800">Dashboard</h1>
 
-    <!-- Link chung (cho tất cả role) -->
+
     <div class="mb-8">
         <h2 class="text-xl font-semibold mb-4 text-gray-700">Chức Năng Chung</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <!-- Chức năng theo role -->
+
     @if (Auth::user()->role === 'admin')
         <div class="mb-8">
             <h2 class="text-xl font-semibold mb-4 text-gray-700">Quản Lý Hệ Thống</h2>
@@ -69,4 +69,12 @@
             </div>
         </div>
     @endif
+@endsection -->
+
+@extends('layouts.app')
+
+@section('title', 'Dashboard')
+
+@section('content')
+    @include('notifications.history')
 @endsection

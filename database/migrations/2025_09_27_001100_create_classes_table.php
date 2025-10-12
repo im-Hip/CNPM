@@ -8,16 +8,17 @@
       {
           public function up(): void
           {
-              Schema::create('rooms', function (Blueprint $table) {
+              Schema::create('classes', function (Blueprint $table) {
                   $table->id();
                   $table->string('name');
-                  $table->int('capacity');
+                  $table->string('grade');
+                  $table->integer('number_of_students');
                   $table->timestamps();
               });
           }
 
           public function down(): void
           {
-              Schema::dropIfExists('rooms');
+              Schema::dropIfExists('classes');
           }
       };

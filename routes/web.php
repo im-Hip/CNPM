@@ -27,8 +27,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Dashboard chung
     Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    //     return view('dashboard');
+    // })->name('dashboard');
+    return redirect()->route('notifications.index');
+    })->middleware(['auth', 'verified'])->name('dashboard');
 
     // Assignment routes
     Route::get('/assignments/create', [AssignmentController::class, 'create'])->name('assignments.create');
