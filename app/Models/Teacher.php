@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Teacher extends Model {
 
     protected $table = 'teachers';  // Nếu có
-    protected $fillable = ['id', 'subject_id'];
+    protected $fillable = ['id', 'teacher_id', 'subject_id', 'level'];
 
     public function user() {
         return $this->belongsTo(User::class, 'id');  // Hoặc 'user_id' nếu column khác
