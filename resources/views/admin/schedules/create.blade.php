@@ -1,8 +1,9 @@
-@extends('layouts.app')  <!-- Hoặc layout của bạn -->
+@extends('layouts.app')
 
 @section('content')
 <div class="container mx-auto p-4 max-w-2xl">
-    <h1 class="text-2xl font-bold mb-4 text-gray-800">Thêm Lịch Học Mới</h1>
+
+    <h1 class="text-3xl font-bold text-center" style="color: #1e3a8a;">Thêm lịch học mới</h1>
 
     @if ($errors->any())
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -24,7 +25,7 @@
         @csrf
         <div class="bg-white p-6 rounded shadow">
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Lớp học <span class="text-red-500">*</span></label>
+                <label class="block text-gray-700 text-sm font-extrabold mb-2">Lớp học <span class="text-red-500">*</span></label>
                 <select name="class_id" class="w-full px-3 py-2 border rounded" required onchange="loadSubjects(this.value)">
                     <option value="">Chọn lớp</option>
                     @foreach ($classes as $class)
@@ -34,20 +35,20 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Môn học <span class="text-red-500">*</span></label>
+                <label class="block text-gray-700 text-sm font-extrabold mb-2">Môn học <span class="text-red-500">*</span></label>
                 <select name="subject_id" id="subject-select" class="w-full px-3 py-2 border rounded" required onchange="loadTeacher()">
                     <option value="">Chọn lớp trước</option>
                 </select>
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Giáo viên</label>
+                <label class="block text-gray-700 text-sm font-extrabold mb-2">Giáo viên</label>
                 <input type="text" id="teacher-display" class="w-full px-3 py-2 border rounded bg-gray-100" readonly>
                 <input type="hidden" name="teacher_id" id="teacher-id">
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Phòng học</label>
+                <label class="block text-gray-700 text-sm font-extrabold mb-2">Phòng học</label>
                 <select name="room_id" id="room-select" class="w-full px-3 py-2 border rounded">
                     <option value="">Chưa chỉ định</option>
                     @foreach ($rooms as $room)
@@ -57,7 +58,7 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Thứ <span class="text-red-500">*</span></label>
+                <label class="block text-gray-700 text-sm font-extrabold mb-2">Thứ <span class="text-red-500">*</span></label>
                 <select name="day_of_week" class="w-full px-3 py-2 border rounded" required>
                     <option value="">Chọn thứ</option>
                     <option value="1" {{ old('day_of_week') == 1 ? 'selected' : '' }}>Thứ 2</option>
@@ -74,7 +75,7 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Tiết <span class="text-red-500">*</span></label>
+                <label class="block text-gray-700 text-sm font-extrabold mb-2">Tiết <span class="text-red-500">*</span></label>
                 <select name="class_period" class="w-full px-3 py-2 border rounded" required>
                     <option value="">Chọn tiết</option>
                     @for ($p = 1; $p <= 10; $p++)
@@ -84,13 +85,14 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Ghi chú</label>
+                <label class="block text-gray-700 text-sm font-extrabold mb-2">Ghi chú</label>
                 <textarea name="note" id="note-input" class="w-full px-3 py-2 border rounded" rows="3">{{ old('note') }}</textarea>
             </div>
 
-            <div class="flex space-x-4">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Lưu Lịch Học</button>
-                <a href="{{ route('schedules.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Hủy</a>
+            <!-- Buttons -->
+            <div class="flex justify-end space-x-4">
+                <a href="{{ route('schedules.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Hủy</a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Lưu Lịch Học</button>
             </div>
         </div>
     </form>
