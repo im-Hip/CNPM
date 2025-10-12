@@ -110,8 +110,8 @@ class AssignmentController extends Controller
         $assignment = Assignment::findOrFail($id);
 
         if (Carbon::parse($assignment->due_date)->isPast()) {
-        return back()->with('error', 'Bài tập này đã hết hạn nộp!');
-    }
+            return back()->with('error', 'Bài tập này đã hết hạn nộp!');
+        }
 
         $request->validate([
             'file' => 'required|mimes:pdf,doc,docx,zip,png,jpg,jpeg|max:10240', // Giới hạn 10MB
@@ -137,6 +137,18 @@ class AssignmentController extends Controller
             'submissions.student.user'
         ])->findOrFail($id);
 
-        return view('assignments.show', compact('assignment'));
+        // Lấy danh sách nộp mới nhất theo từng học sinh
+        $latestSubmissions = $assignment->submissions
+            ->sortBy('submitted_at')                // sắp xếp theo thời gian nộp
+            ->groupBy('student_id')                 // nhóm theo học sinh
+            ->map(fn($group) => $group->last());    // lấy lần nộp mới nhất mỗi nhóm
+
+        // Tính số học sinh đã nộp (mỗi học sinh chỉ tính 1 lần)
+        $submittedStudents = $latestSubmissions->count();
+
+        //Tổng số học sinh trong lớp
+        $totalStudents = $assignment->teacherAssignment->class->number_of_students;
+
+        return view('assignments.show', compact('assignment', 'latestSubmissions', 'submittedStudents', 'totalStudents'));
     }
 }

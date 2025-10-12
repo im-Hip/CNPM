@@ -51,7 +51,20 @@
         @if (session('success'))
         <div class="bg-green-100 text-green-700 p-2 mb-4">{{ session('success') }}</div>
         @endif
-        @if ($assignments->isEmpty())
+
+        @php
+            // Áp dụng lọc trạng thái nếu có
+            $filteredAssignments = $assignments->filter(function($assignment) {
+                if (request('status') === 'submitted') {
+                    return $assignment->submitted;
+                } elseif (request('status') === 'not_submitted') {
+                    return !$assignment->submitted;
+                }
+                return true; // Không lọc
+            });
+        @endphp
+
+        @if ($filteredAssignments->isEmpty())
         <p>Hiện không có bài tập.</p>
         @else
         <table class="min-w-full bg-white border">
@@ -63,11 +76,23 @@
                     <th class="border p-2">Môn học</th>
                     <th class="border p-2">Ngày hết hạn</th>
                     <th class="border p-2">Nộp bài</th>
-                    <th class="border p-2">Trạng thái</th>
+                    <th class="border p-2">
+                        <div class="flex items-center justify-between">
+                            <span>Trạng thái</span>
+                            {{-- Bộ lọc nằm bên phải chữ --}}
+                            <form method="GET" action="{{ route('assignments.index') }}">
+                                <select name="status" onchange="this.form.submit()" class="border rounded p-1 text-sm ml-2">
+                                    <option value="">Tất cả</option>
+                                    <option value="submitted" {{ request('status') === 'submitted' ? 'selected' : '' }}>Đã nộp</option>
+                                    <option value="not_submitted" {{ request('status') === 'not_submitted' ? 'selected' : '' }}>Chưa nộp</option>
+                                </select>
+                            </form>
+                        </div>
+                    </th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($assignments as $assignment)
+                @foreach ($filteredAssignments as $assignment)
                 <tr>
                     <td class="border p-2">{{ $assignment->title }}</td>
                     <td class="border p-2">{{ $assignment->content }}</td>

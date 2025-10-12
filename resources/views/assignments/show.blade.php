@@ -16,6 +16,7 @@
             <p class="mb-1"><strong>Lớp:</strong> {{ $assignment->teacherAssignment->class->name ?? 'Không rõ' }}</p>
             <p class="mb-1"><strong>Hạn nộp:</strong> {{ $assignment->due_date }}</p>
             <p class="mt-2"><strong>Nội dung:</strong> {{ $assignment->content }}</p>
+            <p class="mt-2"><strong>Số lượng học sinh đã nộp bài:</strong> {{ $submittedStudents }} / {{ $totalStudents }}</p>
         </div>
 
         {{-- Danh sách học sinh nộp bài --}}
@@ -33,7 +34,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($assignment->submissions as $submission)
+                    @foreach ($latestSubmissions as $submission)
                         <tr>
                             <td class="border p-2">{{ $submission->student->user->name ?? 'Không rõ' }}</td>
                             <td class="border p-2">{{ $submission->submitted_at }}</td>
