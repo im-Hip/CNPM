@@ -50,22 +50,21 @@ Hệ thống quản lý lịch học và thông báo là một ứng dụng web 
 
 ### Bước 1: Clone repository
 
-(gitbash)
-git clone https://github.com/[your-username]/CNPM.git
-cd CNPM
+- git clone https://github.com/[your-username]/CNPM.git (gitbash)
+- cd CNPM
 
 ### Bước 2: Cài đặt PHP dependencies
 
-composer install
+- composer install
 
 ### Bước 3: Cài đặt Node.js dependencies
 
-npm install
+- npm install
 
 ### Bước 4: Cấu hình môi trường
 
-Copy file môi trường mẫu: cp .env.example .env
-Tạo application key: php artisan key:generate
+- Copy file môi trường mẫu: cp .env.example .env
+- Tạo application key: php artisan key:generate
 
 ### Bước 5: Cấu hình database
 
@@ -78,16 +77,13 @@ Tạo application key: php artisan key:generate
     DB_USERNAME=root
     DB_PASSWORD=
 - Chạy migrations và seeders:
-    php artisan migrate:fresh
-    php artisan db:seed
+    php artisan migrate:fresh và php artisan db:seed
 - Build assets:
-    npm run dev
-    npm run build
+    npm run dev và npm run build
 - Tạo symbolic link cho storage:
     php artisan storage:link
 - Chạy ứng dụng:
-    php artisan serve
-    npm run dev
+    php artisan serve và npm run dev
 
 ## Biến môi trường
 
@@ -114,8 +110,8 @@ MAIL_PASSWORD=your_app_password
 
 ## Testing
 
-php artisan test
-php artisan test --coverage
+- php artisan test
+- php artisan test --coverage
 
 ## About Laravel
 
