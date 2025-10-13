@@ -131,8 +131,8 @@
                     
                     <!-- Chọn lớp -->
                     <div id="class_select" style="display: none;">
-                        <select name="recipient_id" 
-                                id="recipient_id_class" 
+                        <select name="class_id" 
+                                id="recipient_id" 
                                 class="w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('recipient_id') border-red-500 @enderror"
                                 style="padding: 0.5rem 1rem;">
                             <option value="">-- Chọn lớp --</option>
@@ -144,9 +144,6 @@
                                 @endif
                             @endforeach
                         </select>
-                        @error('recipient_id')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
                     </div>
                     
                     <!-- Tìm kiếm cá nhân (chỉ cho admin) -->
@@ -195,11 +192,13 @@
             const individualSearch = document.getElementById('individual_search');
             const classSelectElement = document.getElementById('recipient_id_class');
             const individualHidden = document.getElementById('recipient_id_individual');
+            const individualDiv = document.getElementById('recipient_search');
 
             if (recipientType === 'all' || recipientType === 'teachers' || recipientType === 'students' || recipientType === '') {
                 recipientField.style.display = 'none';
                 classSelect.style.display = 'none';
                 if (individualSearch) individualSearch.style.display = 'none';
+                individualDiv.removeAttribute('required');
             } else {
                 recipientField.style.display = 'block';
                 if (recipientType === 'class') {
@@ -208,6 +207,7 @@
                     if (previousType === 'individual' && individualHidden) {
                         individualHidden.value = '';
                     }
+                    individualDiv.removeAttribute('required');
                 } else if (recipientType === 'individual') {
                     classSelect.style.display = 'none';
                     if (individualSearch) individualSearch.style.display = 'block';
@@ -219,6 +219,7 @@
                     }
                     document.getElementById('recipient_search').value = '';
                     document.getElementById('suggestions').style.display = 'none';
+                    individualDiv.setAttribute('required', 'required');
                 }
             }
             previousType = recipientType;

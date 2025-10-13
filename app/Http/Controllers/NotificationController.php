@@ -18,26 +18,26 @@ class NotificationController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'admin') {
-        // Admin xem tất cả thông báo đã gửi
+            // Admin xem tất cả thông báo đã gửi
             $sentNotifications = Notification::where('sender_id', $user->id)
                 ->orderBy('sent_at', 'desc')
                 ->paginate(10);
         } elseif ($user->role === 'teacher') {
-        // Teacher xem thông báo đã gửi của mình
+            // Teacher xem thông báo đã gửi của mình
             $sentNotifications = Notification::where('sender_id', $user->id)
                 ->orderBy('sent_at', 'desc')
                 ->paginate(10);
         } else {
-        // Student xem thông báo nhận được
-            $sentNotifications = Notification::where(function($query) use ($user) {
+            // Student xem thông báo nhận được
+            $sentNotifications = Notification::where(function ($query) use ($user) {
                 $query->where('recipient_type', 'App\Models\User')
                     ->where('recipient_id', $user->id);
             })
-            ->orWhere('recipient_type', 'all')
-            ->orWhere('recipient_type', 'students')
-            ->orderBy('sent_at', 'desc')
-            ->paginate(10);
-    }
+                ->orWhere('recipient_type', 'all')
+                ->orWhere('recipient_type', 'students')
+                ->orderBy('sent_at', 'desc')
+                ->paginate(10);
+        }
 
         // Dùng chung view history cho tất cả role
         return view('notifications.history', compact('sentNotifications'));
@@ -69,7 +69,8 @@ class NotificationController extends Controller
         ];
 
         if ($sender->role === 'admin') {
-            $rules['recipient_id'] = 'required_if:recipient_type,class,individual|exists:classes,id';
+            //nếu chọn theo cá nhân
+            $rules['recipient_id'] = 'nullable|required_if:recipient_type,individual|exists:users,id';
         } else {
             // Teacher chỉ gửi 'class'
             $rules['recipient_type'] = 'required|in:class';
@@ -94,7 +95,7 @@ class NotificationController extends Controller
                 $recipients = User::where('role', 'student')->get();
                 Log::info('Admin gửi students: ' . $recipients->count() . ' recipients');
             } elseif ($request->recipient_type === 'class') {
-                $class = Classes::find($request->recipient_id);
+                $class = Classes::find($request->class_id);
                 if (!$class) {
                     abort(404, 'Lớp không tồn tại');
                 }
@@ -136,7 +137,7 @@ class NotificationController extends Controller
             abort(403, 'Chỉ admin và teacher mới gửi được thông báo.');
         }
 
-        // Tạo notifications cho từng recipient
+        //Tạo notifications cho từng recipient
         foreach ($recipients as $recipient) {
             if ($recipient) {  // Đảm bảo không null
                 $notification = Notification::create([
