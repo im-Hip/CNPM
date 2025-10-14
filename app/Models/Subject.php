@@ -28,7 +28,14 @@ class Subject extends Model
     // Relationship với teachers
     public function teachers()
     {
-        return $this->hasMany(Teacher::class, 'subject_id');
+        return $this->hasManyThrough(
+        Teacher::class, 
+        TeacherAssignment::class, 
+        'subject_id', // Foreign key trên teacher_assignments
+        'id',          // Local key trên teachers  
+        'id',          // Local key trên teacher_assignments
+        'teacher_id'   // Foreign key trên teacher_assignments
+    );
     }
 
     // Relationship với teacher_assignments

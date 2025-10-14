@@ -38,13 +38,21 @@
             
             <!-- Các menu items khác giữ nguyên -->
             <li>
+                <a href="{{ route('admin.statistics') }}" 
+                   class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 
+                   {{ str_contains($currentRoute, 'admin.statistics') ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
+                    <span class="font-medium">📊ㅤThống kê</span>
+                </a>
+            </li>
+
+            <li>
                 <a href="{{ route('admin.users.create') }}" 
                    class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 
                    {{ str_contains($currentRoute, 'admin.users') ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
                     <span class="font-medium">👥ㅤQuản lý người dùng</span>
                 </a>
             </li>
-            
+
             <li>
                 <a href="{{ route('schedules.index') }}" 
                    class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 
