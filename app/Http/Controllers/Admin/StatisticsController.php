@@ -81,23 +81,37 @@ class StatisticsController extends Controller
             ->filter(fn($stat) => !empty($stat['subjects'])) // Chỉ giữ lớp có môn
             ->values()
             ->toArray();
-
-        // Fallback nếu rỗng
-        if (empty($scheduleStats)) {
-            $scheduleStats = [
-                [
-                    'class_name' => 'No Data (Test)',
-                    'subjects' => [
-                        ['label' => 'Toán', 'value' => 0],
-                        ['label' => 'Lý', 'value' => 0]
-                    ]
-                ]
+        $notificationTypeStats = \DB::table('notifications')
+        ->selectRaw('type, COUNT(DISTINCT CONCAT(sender_id, title, content, DATE(sent_at))) as send_count')
+        ->groupBy('type')
+        ->get()
+        ->map(function ($row) {
+            $typeNames = [
+                'event' => 'Sự kiện',
+                'exam' => 'Kỳ thi',
+                'assignment' => 'Bài tập',
+                'warning' => 'Cảnh báo',
+                'scholarship' => 'Học bổng'
             ];
-            Log::info('Using fallback scheduleStats');
-        }
+            return [
+                'label' => $typeNames[$row->type] ?? $row->type,
+                'value' => (int)$row->send_count
+            ];
+        })->toArray();
+
+    // Fallback nếu rỗng
+    if (empty($notificationTypeStats)) {
+        $notificationTypeStats = [
+            ['label' => 'Sự kiện', 'value' => 0],
+            ['label' => 'Kỳ thi', 'value' => 0],
+            ['label' => 'Bài tập', 'value' => 0],
+            ['label' => 'Cảnh báo', 'value' => 0],
+            ['label' => 'Học bổng', 'value' => 0]
+        ];
+    }
 
         return view('admin.statistics.index', compact(
-            'classStats', 'subjectStats', 'levelStats', 'scheduleStats'
+            'classStats', 'subjectStats', 'levelStats', 'scheduleStats', 'notificationTypeStats'
         ));
     }
 }
