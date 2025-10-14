@@ -200,4 +200,10 @@ class NotificationController extends Controller
 
         return response()->json($results);
     }
+
+    public function show($id)
+    {
+        $notification = Notification::with('sender')->findOrFail($id);
+        return view('notifications.show', compact('notification'));
+    }
 }

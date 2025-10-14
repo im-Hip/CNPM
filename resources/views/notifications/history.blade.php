@@ -51,6 +51,7 @@
             $notification = $group['notification'];
             @endphp
             @if ($notification)
+                    <a href="{{ route('notifications.show', $notification->id) }}" class="block hover:bg-gray-50 transition">
                         <div class="notification-item border-l-4 border-blue-500 bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow duration-200">
                             <div class="flex justify-between items-start">
                                 <!-- Nội dung -->
@@ -58,9 +59,6 @@
                                     <h3 class="text-lg font-semibold text-gray-800 mb-2">
                                         {{ $notification->title }}
                                     </h3>
-                                    <p class="text-gray-600 mb-3">
-                                        {{ $notification->content }}
-                                    </p>
                                     <div class="flex items-center text-sm text-gray-500 space-x-4">
                                         <!-- Người gửi -->
                                         <span class="flex items-center">
@@ -108,7 +106,8 @@
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    </a>
+            @endif
             @endforeach
         </div>
         @endif
