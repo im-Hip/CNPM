@@ -204,6 +204,9 @@ class NotificationController extends Controller
     public function show($id)
     {
         $notification = Notification::with('sender')->findOrFail($id);
+        if(Auth::user()->role != 'admin'){
+            $notification->update(['is_read' => true]);
+        }
         return view('notifications.show', compact('notification'));
     }
 }

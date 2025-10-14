@@ -103,6 +103,20 @@
                                             {{ $notification->recipient->name }}
                                         @endif
                                     </span>
+                                    @if(Auth::user()->role != 'admin')
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                            @if($notification->is_read)
+                                                bg-gray-100 text-gray-800
+                                            @else
+                                                bg-red-100 text-red-800
+                                            @endif">
+                                            @if($notification->is_read)
+                                                Đã đọc
+                                            @else
+                                                Chưa đọc
+                                            @endif
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
                         </div>

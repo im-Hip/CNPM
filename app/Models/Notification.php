@@ -14,6 +14,7 @@ class Notification extends Model
         'recipient_type',
         'recipient_id',
         'sent_at',
+        'is_read',
     ];
 
     public function sender()
