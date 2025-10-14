@@ -40,8 +40,7 @@
     <!-- Thống kê lịch học -->
     <div class="mt-12">
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Thống kê lịch học theo lớp (Số tiết mỗi môn)</h2>
-        
-        @if(isset($scheduleStats) && count($scheduleStats) > 0 && !empty($scheduleStats[0]['subjects']))
+     @if(isset($scheduleStats) && count($scheduleStats) > 0 && !empty($scheduleStats[0]['subjects']))
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach($scheduleStats as $index => $stat)
                     <div class="bg-white p-6 rounded-lg shadow-md">
@@ -67,6 +66,17 @@
             </div>
         @endif
     </div>
+    <div class="mt-12">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Thống kê thông báo đã gửi theo loại</h2>
+        <div class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+            <div class="chart-container">
+                <canvas id="notificationTypeChart"></canvas>
+            </div>
+            @if(empty($notificationTypeStats) || array_sum(array_column($notificationTypeStats, 'value')) === 0)
+                <p class="text-gray-500 text-center mt-4">Chưa có thông báo nào được gửi.</p>
+            @endif
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -77,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const subjectStats = @json($subjectStats ?? []);
     const levelStats = @json($levelStats ?? []);
     const scheduleStats = @json($scheduleStats ?? []);
+    const notificationTypeStats = @json($notificationTypeStats ?? []); // ✅ THÊM
 
     // Màu sắc cho bar charts
     const barColors = [
@@ -123,21 +134,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function createPieChart(canvasId, subjects) {
+    function createPieChart(canvasId, data) {
         const canvas = document.getElementById(canvasId);
-        if (!canvas || !subjects || subjects.length === 0) return;
+        if (!canvas || !data || data.length === 0) return;
         
-        const validSubjects = subjects.filter(s => s.value > 0);
-        if (validSubjects.length === 0) return;
+        const validData = data.filter(s => s.value > 0);
+        if (validData.length === 0) return;
         
         new Chart(canvas, {
             type: 'pie',
             data: {
-                labels: validSubjects.map(s => `${s.label} (${s.value} tiết)`),
+                labels: validData.map(s => `${s.label} (${s.value} lần gửi)`),
                 datasets: [{
-                    data: validSubjects.map(s => s.value),
-                    backgroundColor: pieColors.slice(0, validSubjects.length),
-                    borderColor: getBorderColors(pieColors.slice(0, validSubjects.length)),
+                    data: validData.map(s => s.value),
+                    backgroundColor: pieColors.slice(0, validData.length),
+                    borderColor: getBorderColors(pieColors.slice(0, validData.length)),
                     borderWidth: 2
                 }]
             },
@@ -151,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     tooltip: {
                         callbacks: {
-                            label: ctx => `${ctx.label}: ${ctx.raw} tiết`
+                            label: ctx => `${ctx.label}: ${ctx.raw} lần gửi`
                         }
                     }
                 }
@@ -169,12 +180,8 @@ document.addEventListener('DOMContentLoaded', function() {
         createPieChart(`scheduleChart_${index}`, stat.subjects);
     });
 
-    console.log('Charts initialized:', {
-        classStats: classStats.length,
-        subjectStats: subjectStats.length,
-        levelStats: levelStats.length,
-        scheduleStats: scheduleStats.length
-    });
+    // ✅ THÊM: Tạo pie chart cho thông báo theo loại
+    createPieChart('notificationTypeChart', notificationTypeStats);
 });
 </script>
 
@@ -185,7 +192,6 @@ document.addEventListener('DOMContentLoaded', function() {
     width: 100%;
     margin-bottom: 1rem;
 }
-
 canvas {
     max-height: 100% !important;
     width: 100% !important;
