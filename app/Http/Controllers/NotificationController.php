@@ -10,37 +10,55 @@ use App\Models\TeacherAssignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;  // Thêm để debug (xóa sau nếu không cần)
+use Illuminate\Support\Facades\DB;
 
 class NotificationController extends Controller
 {
     public function index()
     {
+        //Bản ghi người dùng
         $user = Auth::user();
 
+        //Phân quyền
         if ($user->role === 'admin') {
-            // Admin xem tất cả thông báo đã gửi
-            $sentNotifications = Notification::where('sender_id', $user->id)
-                ->orderBy('sent_at', 'desc')
-                ->paginate(10);
-        } elseif ($user->role === 'teacher') {
-            // Teacher xem thông báo đã gửi của mình
-            $sentNotifications = Notification::where('sender_id', $user->id)
-                ->orderBy('sent_at', 'desc')
-                ->paginate(10);
-        } else {
-            // Student xem thông báo nhận được
-            $sentNotifications = Notification::where(function ($query) use ($user) {
-                $query->where('recipient_type', 'App\Models\User')
-                    ->where('recipient_id', $user->id);
-            })
-                ->orWhere('recipient_type', 'all')
-                ->orWhere('recipient_type', 'students')
-                ->orderBy('sent_at', 'desc')
-                ->paginate(10);
+            $notificationsQuery = Notification::where('sender_id', $user->id);
+        }else {
+            $notificationsQuery = Notification::where('recipient_id', $user->id);
         }
 
-        // Dùng chung view history cho tất cả role
-        return view('notifications.history', compact('sentNotifications'));
+        //Gom nhóm thông báo, trả về sent_key và rep_id
+        $groupedQuery = $notificationsQuery
+            ->select(
+                DB::raw("DATE_FORMAT(sent_at, '%Y-%m-%d %H:%i:%s') as sent_key"),
+                DB::raw('MIN(id) as rep_id')
+            )
+            ->groupBy('sent_key')
+            ->orderByDesc('sent_key');
+
+        //Phân trang với 10 nhóm mỗi trang, dùng để phân trang
+        $groups = $groupedQuery->paginate(10);
+
+        //Biến collection thành mảng có key là id
+        $representativeIds = $groups->pluck('rep_id');
+        $representativeNotifications = Notification::whereIn('id', $representativeIds)
+            ->with('sender') // load thông tin người gửi nếu có quan hệ
+            ->get()
+            ->keyBy('id');
+
+        //Tạo một collection mới với sent_key và notification, dùng để hiển thị thông báo đại diện
+        $groupedNotifications = $groups->map(function ($group) use ($representativeNotifications) {
+            return [
+                'sent_key' => $group->sent_key,
+                'notification' => $representativeNotifications[$group->rep_id] ?? null,
+            ];
+        });
+
+        //dd($groupedNotifications);
+
+        return view('notifications.history', [
+            'groupedNotifications' => $groupedNotifications,
+            'groups' => $groups,
+        ]);
     }
 
     public function create()
@@ -74,7 +92,7 @@ class NotificationController extends Controller
         } else {
             // Teacher chỉ gửi 'class'
             $rules['recipient_type'] = 'required|in:class';
-            $rules['recipient_id'] = 'required|exists:classes,id';
+            $rules['class_id'] = 'required|exists:classes,id';
         }
 
         $request->validate($rules);
@@ -109,7 +127,7 @@ class NotificationController extends Controller
             }
         } elseif ($sender->role === 'teacher') {
             // Teacher: Chỉ gửi đến class được assign
-            $classId = $request->recipient_id;
+            $classId = $request->class_id;
             $class = Classes::find($classId);
             if (!$class) {
                 abort(404, 'Lớp không tồn tại');
@@ -138,6 +156,8 @@ class NotificationController extends Controller
         }
 
         //Tạo notifications cho từng recipient
+        $sentTime = now();
+
         foreach ($recipients as $recipient) {
             if ($recipient) {  // Đảm bảo không null
                 $notification = Notification::create([
@@ -145,9 +165,9 @@ class NotificationController extends Controller
                     'content' => $request->content,
                     'type' => $request->type,
                     'sender_id' => $sender->id,
-                    'recipient_type' => 'App\Models\User',
+                    'recipient_type' => $request->recipient_type,
                     'recipient_id' => $recipient->id,
-                    'sent_at' => now(),
+                    'sent_at' => $sentTime,
                 ]);
                 if ($notification) {
                     $createdCount++;
