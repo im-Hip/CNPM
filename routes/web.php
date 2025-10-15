@@ -35,8 +35,8 @@ Route::middleware(['auth'])->group(function () {
     })->middleware(['auth', 'verified'])->name('dashboard');
 
     // Assignment routes
-    Route::get('/assignments/create', [AssignmentController::class, 'create'])->name('assignments.create');
     Route::post('/assignments', [AssignmentController::class, 'store'])->name('assignments.store');
+    Route::get('/assignments/create', [AssignmentController::class, 'create'])->name('assignments.create');
     Route::get('/assignments', [AssignmentController::class, 'index'])->name('assignments.index');
 
     // Schedule index (xem lịch cho tất cả user)
@@ -108,6 +108,22 @@ Route::post('/assignments/{id}/upload', [AssignmentController::class, 'uploadFil
 
 //hien thi danh sach hoc sinh da nop bai
 Route::get('/assignments/{id}', [AssignmentController::class, 'show'])->name('assignments.show');
+
+//Điều hướng khi người dùng bấm vào nút exam
+Route::get('/exam-redirect', function () {
+    $user = Auth::user();
+
+    if ($user->role === 'teacher') {
+        return redirect()->route('assignments.create');
+    }
+
+    if ($user->role === 'student') {
+        return redirect()->route('assignments.index');
+    }
+
+    return redirect('/dashboard');
+    
+})->middleware('auth')->name('exam.redirect');
 
 // Auth routes (Breeze/Jetstream – handle login/register/logout)
 require __DIR__.'/auth.php';
