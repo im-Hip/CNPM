@@ -69,13 +69,13 @@
                 </a>
             </li>
             
-            <li>
+            <!-- <li>
                 <a href="{{ route('assignments.index') }}" 
                    class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 
                    {{ str_contains($currentRoute, 'assignments') && !str_contains($currentRoute, 'teacher_assignments') ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
                     <span class="font-medium">📝ㅤQuản lý bài tập</span>
                 </a>
-            </li>
+            </li> -->
             
             <li>
                 <a href="{{ route('teacher_assignments.index') }}" 

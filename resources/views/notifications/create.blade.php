@@ -262,10 +262,6 @@
 
     <!-- Styles -->
     <style>
-        button[type="submit"]:hover {
-            background-color: #1d4ed8 !important;
-        }
-        
         #suggestions > div:hover {
             background-color: #f3f4f6;
         }
