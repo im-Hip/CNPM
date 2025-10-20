@@ -256,11 +256,9 @@
             });
         }
 
-        // Khởi tạo
         toggleRecipientField();
     </script>
 
-    <!-- Styles -->
     <style>
         #suggestions > div:hover {
             background-color: #f3f4f6;

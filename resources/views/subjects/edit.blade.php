@@ -39,7 +39,6 @@
                 @csrf
                 @method('PUT')
                 
-                <!-- Tên môn học -->
                 <div style="margin-bottom: 1.5rem;">
                     <label for="name" class="block text-sm font-extrabold text-gray-800" style="margin-bottom: 0.5rem;">
                         Tên môn học <span class="text-red-500">*</span>
@@ -57,7 +56,6 @@
                     @enderror
                 </div>
                 
-                <!-- Mã môn học -->
                 <div style="margin-bottom: 1.5rem;">
                     <label for="subject_id" class="block text-sm font-extrabold text-gray-800" style="margin-bottom: 0.5rem;">
                         Mã môn học <span class="text-red-500">*</span>
@@ -75,7 +73,6 @@
                     @enderror
                 </div>
                 
-                <!-- Số tiết/tuần -->
                 <div style="margin-bottom: 1.5rem;">
                     <label for="number_of_periods" class="block text-sm font-extrabold text-gray-800" style="margin-bottom: 0.5rem;">
                         Số tiết/tuần <span class="text-red-500">*</span>
@@ -96,7 +93,6 @@
                     @enderror
                 </div>
                 
-                <!-- Buttons -->
                 <div style="margin-top: 2rem;" class="flex justify-end space-x-4">
                     <a href="{{ route('subjects.index') }}" 
                        class="text-white font-bold rounded transition-colors hover:opacity-90"
@@ -113,7 +109,6 @@
         </div>
     </div>
 
-    <!-- Responsive Styles -->
     <style>
         @media (max-width: 640px) {
             h1 {
@@ -140,7 +135,6 @@
             }
         }
 
-        /* Smooth transitions */
         input:focus, select:focus, textarea:focus {
             transition: all 0.2s ease-in-out;
         }

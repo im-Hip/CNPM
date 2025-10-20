@@ -1,6 +1,13 @@
 <x-guest-layout>
+    <style>
+        .vietnamese-text {
+            font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
 
-    <h2 class="text-3xl font-extrabold text-center text-blue-600 mb-4">
+    <h2 class="text-3xl font-extrabold text-center text-blue-600 mb-4 vietnamese-text">
         QUÊN MẬT KHẨU
     </h2>
 
@@ -11,10 +18,10 @@
 
         <!-- Email Address -->
         <div>
-            <label for="email" class="block font-medium text-sm text-gray-700">Email</label>
+            <label for="email" class="block font-medium text-sm text-gray-700 vietnamese-text">Email</label>
 
             <input id="email"
-                   class="block mt-1 w-full px-4 py-2 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   class="block mt-1 w-full px-4 py-2 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 vietnamese-text"
                    type="email"
                    name="email"
                    value="{{ old('email') }}"
@@ -28,7 +35,7 @@
 
         <div class="flex items-center justify-end mt-4">
             <button type="submit"
-                    class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                    class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 vietnamese-text">
                 Gửi liên kết đặt lại mật khẩu
             </button>
         </div>
