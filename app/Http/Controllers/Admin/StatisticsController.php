@@ -35,21 +35,21 @@ class StatisticsController extends Controller
             ->toArray();
 
         // 3. Thống kê giáo viên theo học hàm
-        $levelStats = DB::table('teachers')
-            ->selectRaw('level, COUNT(*) as count')
-            ->groupBy('level')
-            ->get()
-            ->map(function ($teacher) {
-                $vietnamese = [
-                    'Bachelor' => 'Cử nhân',
-                    'Master' => 'Thạc sĩ',
-                    'PhD' => 'Tiến sĩ'
-                ];
-                return [
-                    'label' => $vietnamese[$teacher->level] ?? $teacher->level ?? 'Không xác định',
-                    'value' => (int)$teacher->count
-                ];
-            })->toArray();
+        // $levelStats = DB::table('teachers')
+        //     ->selectRaw('level, COUNT(*) as count')
+        //     ->groupBy('level')
+        //     ->get()
+        //     ->map(function ($teacher) {
+        //         $vietnamese = [
+        //             'Bachelor' => 'Cử nhân',
+        //             'Master' => 'Thạc sĩ',
+        //             'PhD' => 'Tiến sĩ'
+        //         ];
+        //         return [
+        //             'label' => $vietnamese[$teacher->level] ?? $teacher->level ?? 'Không xác định',
+        //             'value' => (int)$teacher->count
+        //         ];
+        //     })->toArray();
 
         // 4. Thống kê lịch học theo lớp (pie chart)
         $scheduleRaw = DB::table('schedules')
@@ -111,7 +111,7 @@ class StatisticsController extends Controller
     }
 
         return view('admin.statistics.index', compact(
-            'classStats', 'subjectStats', 'levelStats', 'scheduleStats', 'notificationTypeStats'
+            'classStats', 'subjectStats', /* 'levelStats', */ 'scheduleStats', 'notificationTypeStats'
         ));
     }
 }
