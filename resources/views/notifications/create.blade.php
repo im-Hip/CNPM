@@ -146,7 +146,7 @@
                         </select>
                     </div>
                     
-                    <!-- Tìm kiếm cá nhân (chỉ cho admin) -->
+                    <!-- Tìm kiếm cá nhân (cho admin) -->
                     @if (Auth::user()->role === 'admin')
                     <div id="individual_search" style="display: none;">
                         <input type="text" 

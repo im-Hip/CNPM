@@ -1,78 +1,153 @@
-<!DOCTYPE html>
-<html lang="vi">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm Môn Học</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+@section('title', 'Thêm môn học')
 
-<body class="bg-gray-100 font-sans">
+@section('content')
 
-    <!-- Thanh tiêu đề -->
-    <nav class="bg-blue-600 text-white p-4 shadow-md">
-        <h1 class="text-2xl font-bold">➕ Thêm Môn Học</h1>
-    </nav>
+    <h1 class="text-3xl font-extrabold text-center pt-8" style="color: #1e3a8a;">
+        Thêm môn học
+    </h1>
 
-    <div class="max-w-md mx-auto mt-10 bg-white p-6 rounded-lg shadow-md">
-        @if ($errors->any())
-        <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
-            <ul class="list-disc ml-4">
-                @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+    <!-- Form -->
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white border border-gray-200 rounded-lg shadow-sm" style="padding: 2rem;">
+            
+            @if (session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded" style="margin-bottom: 1.5rem;">
+                    {{ session('success') }}
+                </div>
+            @endif
+            
+            @if (session('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" style="margin-bottom: 1.5rem;">
+                    {{ session('error') }}
+                </div>
+            @endif
+            
+            @if ($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" style="margin-bottom: 1.5rem;">
+                    <ul class="list-disc ml-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <!-- Form thêm môn học -->
+            <form action="{{ route('subjects.store') }}" method="POST">
+                @csrf
+                
+                <!-- Tên môn học -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="name" class="block text-sm font-extrabold text-gray-800" style="margin-bottom: 0.5rem;">
+                        Tên môn học <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           name="name" 
+                           id="name" 
+                           class="w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('name') border-red-500 @enderror" 
+                           style="padding: 0.5rem 1rem;"
+                           placeholder="Nhập tên môn học (VD: Toán, Văn, Anh...)"
+                           value="{{ old('name') }}"
+                           required>
+                    @error('name')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                <!-- Mã môn học -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="subject_id" class="block text-sm font-extrabold text-gray-800" style="margin-bottom: 0.5rem;">
+                        Mã môn học <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           name="subject_id" 
+                           id="subject_id" 
+                           class="w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('subject_id') border-red-500 @enderror" 
+                           style="padding: 0.5rem 1rem;"
+                           placeholder="Nhập mã môn học (VD: TOAN10, VAN11...)"
+                           value="{{ old('subject_id') }}"
+                           required>
+                    @error('subject_id')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                <!-- Số tiết/tuần -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="number_of_periods" class="block text-sm font-extrabold text-gray-800" style="margin-bottom: 0.5rem;">
+                        Số tiết/tuần <span class="text-red-500">*</span>
+                    </label>
+                    <input type="number" 
+                           name="number_of_periods" 
+                           id="number_of_periods" 
+                           class="w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors @error('number_of_periods') border-red-500 @enderror" 
+                           style="padding: 0.5rem 1rem;"
+                           placeholder="Nhập số tiết (1-5)"
+                           value="{{ old('number_of_periods') }}"
+                           min="1" 
+                           max="5" 
+                           required>
+                    <p class="mt-1 text-xs text-gray-500">Nhập số tiết học trong 1 tuần (từ 1 đến 5)</p>
+                    @error('number_of_periods')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                <!-- Buttons -->
+                <div style="margin-top: 2rem;" class="flex justify-end space-x-4">
+                    <a href="{{ route('subjects.index') }}" 
+                       class="text-white font-bold rounded transition-colors hover:opacity-90"
+                       style="background-color: #2563eb; padding: 0.7rem; min-width: 100px; display: inline-block; text-align: center; text-decoration: none;">
+                        Hủy
+                    </a>
+                    <button type="submit" 
+                            class="text-white font-bold rounded transition-colors hover:opacity-90"
+                            style="background-color: #2563eb; padding: 0.7rem; min-width: 100px; display: inline-block;">
+                        Thêm môn học
+                    </button>
+                </div>
+            </form>
         </div>
-        @endif
-
-        <form action="{{ route('subjects.store') }}" method="POST">
-            @csrf
-
-            <div class="mb-4">
-                <label for="name" class="block font-semibold mb-2">Tên môn học</label>
-                <input type="text" name="name" id="name"
-                    class="w-full border-gray-300 rounded p-2 border focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    placeholder="Nhập tên môn học" required>
-            </div>
-
-            <div class="mb-4">
-                <label for="subject_id" class="block font-semibold mb-2">Mã môn học</label>
-                <input
-                    type="text"
-                    name="subject_id"
-                    id="subject_id"
-                    value="{{ old('subject_id') }}"
-                    aria-describedby="subject_id_help subject_id_error"
-                    aria-invalid="{{ $errors->has('subject_id') ? 'true' : 'false' }}"
-                    class="w-full border rounded p-2 focus:outline-none focus:ring-2
-               {{ $errors->has('subject_id') ? 'border-red-500 ring-red-200' : 'border-gray-300 focus:ring-blue-400' }}"
-                    placeholder="Nhập mã môn học"
-                    required>
-            </div>
-
-            <div class="mb-4">
-                <label for="number_of_periods" class="block font-semibold mb-2">Số tiết</label>
-                <input type="number" name="number_of_periods" id="number_of_periods"
-                    class="w-full border-gray-300 rounded p-2 border focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    placeholder="Nhập số tiết (1–5)"
-                    min="1" max="5" required>
-            </div>
-
-            <div class="flex justify-between">
-                <a href="{{ route('subjects.index') }}"
-                    class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition">
-                    ← Quay lại
-                </a>
-
-                <button type="submit"
-                    class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
-                    Lưu môn học
-                </button>
-            </div>
-        </form>
     </div>
 
-</body>
+    <!-- Responsive Styles -->
+    <style>
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 1.75rem;
+                padding-top: 1.5rem;
+            }
+            
+            .max-w-2xl {
+                padding: 0 1rem;
+            }
+            
+            .bg-white {
+                padding: 1.5rem !important;
+            }
+            
+            .flex.space-x-4 {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .flex.space-x-4 a,
+            .flex.space-x-4 button {
+                width: 100%;
+            }
+        }
 
-</html>
+        /* Smooth transitions */
+        input:focus, select:focus, textarea:focus {
+            transition: all 0.2s ease-in-out;
+        }
+
+        button:hover, a:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+
+@endsection

@@ -890,7 +890,7 @@
                 </div>
                 <div class="auth-links">
                     <a href="{{ route('login') }}" style="margin-right: 10px;">👤 Login</a>
-                    <a href="{{ route('register') }}">Register</a>
+                    <!-- <a href="{{ route('register') }}">Register</a> -->
                 </div>
             </div>
         </div>

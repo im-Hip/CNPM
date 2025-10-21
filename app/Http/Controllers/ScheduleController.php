@@ -487,22 +487,23 @@ class ScheduleController extends Controller
     {
         $user = Auth::user();
         if ($user->role !== 'teacher') abort(403);
-
+    
         $schedules = Schedule::where('teacher_id', $user->id)
             ->with(['class', 'subject', 'room'])
             ->orderBy('day_of_week')
             ->orderBy('class_period')
             ->get();
-
+    
         $scheduleByDay = $schedules->groupBy('day_of_week')->map(function ($daySchedules) {
             return $daySchedules->groupBy('class_period')->map(function ($periodSchedules) {
                 return $periodSchedules->first();
             });
         });
-
+    
         $title = 'Lịch Dạy Của ' . $user->name;
-
-        $pdf = Pdf::loadView('schedules.teacher-pdf', compact('scheduleByDay', 'title'));
+        $classNames = $schedules->pluck('class.name')->unique()->implode(', ');  // Lấy tất cả lớp, ngăn cách bằng dấu phẩy
+    
+        $pdf = Pdf::loadView('schedules.pdf', compact('scheduleByDay', 'title', 'classNames'));
         return $pdf->download("lich-day-{$user->name}.pdf");
     }
 }

@@ -286,11 +286,4 @@
             }
         });
     </script>
-
-    
-    <style>
-        button[type="submit"]:hover {
-            background-color: #1d4ed8 !important;
-        }
-    </style>
 @endsection
