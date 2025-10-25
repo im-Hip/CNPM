@@ -7,6 +7,18 @@
     HỆ THỐNG QUẢN LÝ LỊCH HỌC VÀ THÔNG BÁO CHO HỌC SINH
 </h1>
 
+@if (session('success'))
+<div class="alert alert-success border border-green-400 bg-green-100 text-green-700 px-4 py-2 rounded-md mb-4">
+    {{ session('success') }}
+</div>
+@endif
+
+@if (session('error'))
+<div class="alert alert-danger border border-red-400 bg-red-100 text-red-700 px-4 py-2 rounded-md mb-4">
+    {{ session('error') }}
+</div>
+@endif
+
 <div class="bg-white rounded-lg shadow-lg overflow-hidden" style="height: calc(100vh - 180px); display: flex; flex-direction: column;">
 
     <!-- Thanh tiêu đề -->
@@ -51,35 +63,35 @@
             $notification = $group['notification'];
             @endphp
             @if ($notification)
-                    <a href="{{ route('notifications.show', $notification->id) }}" class="block hover:bg-gray-50 transition">
-                        <div class="notification-item border-l-4 border-blue-500 bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow duration-200">
-                            <div class="flex justify-between items-start">
-                                <!-- Nội dung -->
-                                <div class="flex-1 mr-4">
-                                    <h3 class="text-lg font-semibold text-gray-800 mb-2">
-                                        {{ $notification->title }}
-                                    </h3>
-                                    <div class="flex items-center text-sm text-gray-500 space-x-4">
-                                        <!-- Người gửi -->
-                                        <span class="flex items-center">
-                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                                            </svg>
-                                            {{ $notification->sender->role }} : {{ $notification->sender->name ?? 'Hệ thống' }}
-                                        </span>
-                                        <!-- Thời gian -->
-                                        <span class="flex items-center">
-                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
-                                            </svg>
-                                            {{ \Carbon\Carbon::parse($group['sent_key'])->format('d/m/Y H:i:s') }}
-                                        </span>
-                                    </div>
-                                </div>
+            <a href="{{ route('notifications.show', $notification->id) }}" class="block hover:bg-gray-50 transition">
+                <div class="notification-item border-l-4 border-blue-500 bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow duration-200">
+                    <div class="flex justify-between items-start">
+                        <!-- Nội dung -->
+                        <div class="flex-1 mr-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">
+                                {{ $notification->title }}
+                            </h3>
+                            <div class="flex items-center text-sm text-gray-500 space-x-4">
+                                <!-- Người gửi -->
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ $notification->sender->role }} : {{ $notification->sender->name ?? 'Hệ thống' }}
+                                </span>
+                                <!-- Thời gian -->
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ \Carbon\Carbon::parse($group['sent_key'])->format('d/m/Y H:i:s') }}
+                                </span>
+                            </div>
+                        </div>
 
-                                <!-- Loại người nhận -->
-                                <div class="flex-shrink-0">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                        <!-- Loại người nhận -->
+                        <div class="flex-shrink-0 text-right">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
                                         @if($notification->recipient_type === 'all')
                                             bg-green-100 text-green-800
                                         @elseif($notification->recipient_type === 'teachers')
@@ -91,36 +103,56 @@
                                         @else
                                             bg-orange-100 text-orange-800
                                         @endif">
-                                        @if($notification->recipient_type === 'all')
-                                            Tất cả
-                                        @elseif($notification->recipient_type === 'teachers')
-                                            Giáo viên
-                                        @elseif($notification->recipient_type === 'students')
-                                            Học sinh
-                                        @elseif($notification->recipient_type === 'class')
-                                            Lớp {{ $notification->recipient->student->class->name }}
-                                        @else
-                                            {{ $notification->recipient->name }}
-                                        @endif
-                                    </span>
-                                    @if(Auth::user()->role != 'admin')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                @if($notification->recipient_type === 'all')
+                                Tất cả
+                                @elseif($notification->recipient_type === 'teachers')
+                                Giáo viên
+                                @elseif($notification->recipient_type === 'students')
+                                Học sinh
+                                @elseif($notification->recipient_type === 'class')
+                                Lớp {{ $notification->recipient->student->class->name }}
+                                @else
+                                {{ $notification->recipient->name }}
+                                @endif
+                            </span>
+                            @if(Auth::user()->role != 'admin')
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
                                             @if($notification->is_read)
                                                 bg-gray-100 text-gray-800
                                             @else
                                                 bg-red-100 text-red-800
                                             @endif">
-                                            @if($notification->is_read)
-                                                Đã đọc
-                                            @else
-                                                Chưa đọc
-                                            @endif
-                                        </span>
-                                    @endif
-                                </div>
+                                @if($notification->is_read)
+                                Đã đọc
+                                @else
+                                Chưa đọc
+                                @endif
+                            </span>
+                            @endif
+                            @if(Auth::user()->role == 'admin')
+                            <div class="notification-actions hidden mt-2 flex justify-end space-x-2">
+                                <a href="{{ route('notifications.edit', $notification->id) }}"
+                                    class="flex items-center justify-center border border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white text-sm font-medium rounded-md px-3 py-1 transition-all duration-200">
+                                    Sửa
+                                </a>
+
+                                <form action="{{ route('notifications.destroy', $notification->id) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Bạn có chắc muốn xóa thông báo này không?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="flex items-center justify-center border border-red-500 text-red-600 hover:bg-red-500 hover:text-white text-sm font-medium rounded-md px-3 py-1 transition-all duration-200">
+                                        Xóa
+                                    </button>
+                                </form>
                             </div>
+                            @endif
+
                         </div>
-                    </a>
+                    </div>
+                </div>
+            </a>
             @endif
             @endforeach
         </div>
@@ -129,11 +161,11 @@
 
     <!-- Phân trang -->
     @if ($groups->hasPages())
-        <div class="border-t bg-gray-50 px-6 py-4 flex-shrink-0">
-            <div class="flex justify-center">
-                {{ $groups->links('pagination::tailwind') }}
-            </div>
+    <div class="border-t bg-gray-50 px-6 py-4 flex-shrink-0">
+        <div class="flex justify-center">
+            {{ $groups->links('pagination::tailwind') }}
         </div>
+    </div>
     @endif
 </div>
 
@@ -206,6 +238,10 @@
         #searchInput {
             width: 100%;
         }
+    }
+
+    .notification-item:hover .notification-actions {
+        display: flex !important;
     }
 </style>
 @endsection

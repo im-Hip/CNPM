@@ -26,6 +26,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications/history', [NotificationController::class, 'history'])->name('notifications.history');
     Route::get('/search-recipients', [NotificationController::class, 'searchRecipients'])->name('search-recipients');
     Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notifications.show');
+    Route::get('/notifications/{id}/edit', [NotificationController::class, 'edit'])->name('notifications.edit');
+    Route::put('/notifications/{id}', [NotificationController::class, 'update'])->name('notifications.update');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
     // Dashboard chung
     Route::get('/dashboard', function () {

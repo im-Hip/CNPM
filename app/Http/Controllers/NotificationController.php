@@ -22,7 +22,7 @@ class NotificationController extends Controller
         //Phân quyền
         if ($user->role === 'admin') {
             $notificationsQuery = Notification::where('sender_id', $user->id);
-        }else {
+        } else {
             $notificationsQuery = Notification::where('recipient_id', $user->id);
         }
 
@@ -204,9 +204,45 @@ class NotificationController extends Controller
     public function show($id)
     {
         $notification = Notification::with('sender')->findOrFail($id);
-        if(Auth::user()->role != 'admin'){
+        if (Auth::user()->role != 'admin') {
             $notification->update(['is_read' => true]);
         }
         return view('notifications.show', compact('notification'));
+    }
+
+    public function edit($id)
+    {
+        $notification = Notification::findOrFail($id);
+        return view('notifications.edit', compact('notification'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $notification = Notification::findOrFail($id);
+
+        // Giả sử nhóm theo sent_at
+        Notification::where('sent_at', $notification->sent_at)
+            ->where('sender_id', $notification->sender_id)
+            ->update([
+                'title' => $request->title,
+                'content' => $request->content,
+                'updated_at' => now(),
+            ]);
+
+        return redirect()->route('notifications.index')->with('success', 'Cập nhật thông báo thành công!');
+    }
+
+    public function destroy($id)
+    {
+        $notification = Notification::findOrFail($id);
+
+        // Xoá tất cả thông báo cùng "đợt gửi"
+        Notification::where('sent_at', $notification->sent_at)
+            ->where('sender_id', $notification->sender_id)
+            ->delete();
+
+        return redirect()
+            ->route('notifications.index')
+            ->with('success', 'Xóa thông báo thành công!');
     }
 }
