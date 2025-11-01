@@ -3,7 +3,7 @@
 @section('title', 'Lịch sử thông báo')
 
 @section('content')
-<h1 class="text-2xl lg:text-3xl font-bold mb-6 text-center" style="color: #1e3a8a;">
+<h1 class="text-2xl lg:text-3xl font-bold mb-6 text-center icy-header" style="color: #1e3a8a;">
     HỆ THỐNG QUẢN LÝ LỊCH HỌC VÀ THÔNG BÁO CHO HỌC SINH
 </h1>
 

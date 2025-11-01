@@ -877,6 +877,7 @@
 </head>
 
 <body>
+
     <header class="header">
         <!-- Particles -->
         <div class="particles" id="particles"></div>
@@ -897,7 +898,7 @@
         <!-- Navigation -->
         <nav class="navbar">
             <div class="nav-container">
-                <a href="{{ route('home') }}" class="logo">EduLearn</a>
+                <a href="{{ route('home') }}" class="logo">N9</a>
                 <ul class="nav-menu">
                     <li><a href="{{ route('home') }}">Home</a></li>
                     <li><a href="{{ route('home') }}">About Us</a></li>
@@ -1050,6 +1051,7 @@
             });
         });
     </script>
+    @include('partials._snow-effect')
 </body>
 
 </html>

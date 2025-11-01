@@ -99,5 +99,6 @@
         <p>Địa chỉ: 280 An Dương Vương, Phường Chợ Quán, Thành phố Hồ Chí Minh</p>
         <p>Điện thoại: 078xxx1230078xxx1230 | Email: abx@gmail.com</p>
     </div>
+    @include('partials._snow-effect')
 </body>
 </html>

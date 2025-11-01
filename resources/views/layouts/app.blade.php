@@ -253,5 +253,6 @@
             }
         });
     </script>
+    @include('partials._snow-effect')
 </body>
 </html>
