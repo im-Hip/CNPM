@@ -14,7 +14,7 @@ use App\Http\Controllers\SubjectController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return view('welcome');         //hien thi trang chu
+    return view('welcome'); // Hiển thị trang chủ
 })->name('home');
 
 // Auth middleware group (chung cho tất cả user: student/teacher/admin)
@@ -32,9 +32,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Dashboard chung
     Route::get('/dashboard', function () {
-    //     return view('dashboard');
-    // })->name('dashboard');
-    return redirect()->route('notifications.index');
+        return redirect()->route('notifications.index');
     })->middleware(['auth', 'verified'])->name('dashboard');
 
     // Assignment routes
@@ -67,28 +65,28 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/statistics', [StatisticsController::class, 'index'])->name('admin.statistics');
 });
 
-// Admin Schedule management (CRUD + AJAX + API) – Giữ cũ
+// Admin Schedule management (CRUD + AJAX + API)
 Route::middleware(['auth', 'isAdmin'])->group(function () {
-    // New: Full page CRUD
+    // Full page CRUD
     Route::get('/schedules/create', [ScheduleController::class, 'create'])->name('schedules.create');
     Route::post('/schedules', [ScheduleController::class, 'store'])->name('schedules.store');
     
-    // Inline AJAX (giữ nếu muốn, hoặc xóa)
+    // Inline AJAX
     Route::post('/schedules/add', [ScheduleController::class, 'storeInline'])->name('schedules.store-inline');
     Route::post('/schedules/{schedule}/update', [ScheduleController::class, 'updateInline'])->name('schedules.update-inline');
     Route::delete('/schedules/{schedule}', [ScheduleController::class, 'destroyInline'])->name('schedules.destroy-inline');
-    // THÊM MỚI: Edit/Update
+
+    // Edit/Update
     Route::get('/schedules/{schedule}/edit', [ScheduleController::class, 'edit'])->name('schedules.edit');
     Route::put('/schedules/{schedule}', [ScheduleController::class, 'update'])->name('schedules.update');
     
-    // THÊM MỚI: Delete
+    // Delete
     Route::delete('/schedules/{schedule}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
-    // API for options (giữ)
+
+    // API for options
     Route::get('/api/subjects/{class_id}', [ScheduleController::class, 'getSubjectsForClass'])->name('api.subjects-per-class');
     Route::get('/api/teacher/{class_id}/{subject_id}', [ScheduleController::class, 'getTeacherForClassSubject'])->name('api.teacher-per-class-subject');
-    Route::get('/api/rooms', function () { 
-        return response()->json(\App\Models\Room::all(['id', 'name'])); 
-    })->name('api.rooms');
+    Route::get('/api/rooms', [ScheduleController::class, 'getAvailableRooms'])->name('api.rooms'); // Sửa để dùng getAvailableRooms
 });
 
 // Teacher Assignment routes (admin only – resource đầy đủ)
@@ -102,17 +100,16 @@ Route::post('/logout', function () {
     return redirect('/')->with('success', 'Logged out successfully.');
 })->name('logout');
 
-//CRUD subject
+// CRUD subject
 Route::resource('subjects', SubjectController::class);
 
-//hoc sinh upload file
-Route::post('/assignments/{id}/upload', [AssignmentController::class, 'uploadFile'])
-    ->name('assignments.upload');
+// Học sinh upload file
+Route::post('/assignments/{id}/upload', [AssignmentController::class, 'uploadFile'])->name('assignments.upload');
 
-//hien thi danh sach hoc sinh da nop bai
+// Hiển thị danh sách học sinh đã nộp bài
 Route::get('/assignments/{id}', [AssignmentController::class, 'show'])->name('assignments.show');
 
-//Điều hướng khi người dùng bấm vào nút exam
+// Điều hướng khi người dùng bấm vào nút exam
 Route::get('/exam-redirect', function () {
     $user = Auth::user();
 
@@ -125,7 +122,6 @@ Route::get('/exam-redirect', function () {
     }
 
     return redirect('/dashboard');
-    
 })->middleware('auth')->name('exam.redirect');
 
 // Auth routes (Breeze/Jetstream – handle login/register/logout)

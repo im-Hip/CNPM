@@ -7,7 +7,9 @@ use App\Models\TeacherAssignment;
 use App\Models\Teacher;
 use App\Models\Classes;
 use App\Models\Subject;
+use App\Models\Schedule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class TeacherAssignmentController extends Controller
 {
@@ -16,11 +18,16 @@ class TeacherAssignmentController extends Controller
      */
     public function index()
     {
-        if (Auth::user()->role !== 'admin') abort(403);
+        $classes = Classes::all(['id', 'name']);
         $assignments = TeacherAssignment::with(['teacher.user', 'class', 'subject'])
+            ->where('status', 'active')
+            ->when(request('class_id'), function ($query) {
+                return $query->where('class_id', request('class_id'));
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-        return view('teacher_assignments.index', compact('assignments'));
+
+        return view('teacher_assignments.index', compact('assignments', 'classes'));
     }
 
     /**
@@ -48,23 +55,48 @@ class TeacherAssignmentController extends Controller
             'class_id' => 'required|exists:classes,id',
             'subject_id' => 'required|exists:subjects,id',
             'note' => 'nullable|string|max:255',
-        ], [
-            'teacher_id.required' => 'Chọn giáo viên.',
-            'class_id.required' => 'Chọn lớp.',
-            'subject_id.required' => 'Chọn môn.',
+            'status' => 'required|in:active,inactive',
         ]);
     
-        // QUY ĐỊNH: Check tồn tại phân công cho môn + lớp (1 GV/môn/lớp)
-        $exists = TeacherAssignment::where('class_id', $validated['class_id'])
+        // Kiểm tra trùng lặp subject_id và class_id
+        $existingAssignment = TeacherAssignment::where('class_id', $validated['class_id'])
             ->where('subject_id', $validated['subject_id'])
-            ->exists();
-        if ($exists) {
-            return back()->with('error', 'Lớp này đã có giáo viên dạy môn này rồi! Không thể phân công GV khác.');
+            ->where('status', 'active')
+            ->first();
+    
+        if ($existingAssignment) {
+            $existingTeacherName = $existingAssignment->teacher->user->name ?? 'Unknown';
+            return back()->withErrors(['duplicate' => "Đã có giáo viên {$existingTeacherName} được phân công cho môn này ở lớp này!"])->withInput();
         }
     
-        TeacherAssignment::create($validated);
+        // Tạo phân công mới
+        $teacherAssignment = TeacherAssignment::create($validated);
     
-        return redirect()->route('teacher_assignments.index')->with('success', 'Phân công giáo viên thành công!');
+        // Cập nhật lịch học liên quan nếu cần (cần thêm logic nếu có form lịch)
+        try {
+            // Giả sử bạn muốn tạo lịch mặc định, cần điều chỉnh nếu có form chi tiết
+            Schedule::create([
+                'class_id' => $validated['class_id'],
+                'subject_id' => $validated['subject_id'],
+                'teacher_id' => $validated['teacher_id'],
+                'day_of_week' => 1, // Giá trị mặc định, cần điều chỉnh
+                'class_period' => 1, // Giá trị mặc định, cần điều chỉnh
+            ]);
+        
+            Log::info('Created new teacher assignment and schedule at ' . now(), [
+                'teacher_id' => $validated['teacher_id'],
+                'class_id' => $validated['class_id'],
+                'subject_id' => $validated['subject_id'],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error creating schedule at ' . now(), [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->withErrors(['schedule_create' => 'Lỗi khi tạo lịch học: ' . $e->getMessage()])->withInput();
+        }
+    
+        return redirect()->route('teacher_assignments.index')->with('success', 'Phân công đã được tạo thành công!');
     }
 
     /**
@@ -91,21 +123,59 @@ class TeacherAssignmentController extends Controller
             'class_id' => 'required|exists:classes,id',
             'subject_id' => 'required|exists:subjects,id',
             'note' => 'nullable|string|max:255',
+            'status' => 'required|in:active,inactive',
         ]);
 
-        // Unique check (bỏ qua chính record này)
-        $exists = TeacherAssignment::where('teacher_id', $validated['teacher_id'])
-            ->where('class_id', $validated['class_id'])
+        // Kiểm tra trùng lặp subject_id và class_id (trừ bản ghi hiện tại)
+        $existingAssignment = TeacherAssignment::where('class_id', $validated['class_id'])
             ->where('subject_id', $validated['subject_id'])
             ->where('id', '!=', $teacherAssignment->id)
-            ->exists();
-        if ($exists) {
-            return back()->with('error', 'Phân công này đã tồn tại!');
+            ->where('status', 'active') // Chỉ kiểm tra bản ghi active
+            ->first();
+
+        if ($existingAssignment) {
+            $existingTeacherName = $existingAssignment->teacher->user->name ?? 'Unknown';
+            return back()->withErrors(['duplicate' => "Đã có giáo viên {$existingTeacherName} được phân công cho môn này ở lớp này!"])->withInput();
         }
 
+        // Lấy giá trị cũ trước khi update
+        $oldSubjectId = $teacherAssignment->subject_id;
+        $oldClassId = $teacherAssignment->class_id;
+
+        // Cập nhật trạng thái
         $teacherAssignment->update($validated);
 
-        return redirect()->route('teacher_assignments.index')->with('success', 'Phân công đã cập nhật!');
+        // Cập nhật lịch học liên quan nếu thay đổi subject_id hoặc class_id
+        if ($validated['subject_id'] != $oldSubjectId || $validated['class_id'] != $oldClassId) {
+            try {
+                $updatedRows = Schedule::where('class_id', $oldClassId)
+                    ->where('subject_id', $oldSubjectId)
+                    ->update([
+                        'class_id' => $validated['class_id'],
+                        'subject_id' => $validated['subject_id'],
+                        'teacher_id' => $validated['teacher_id']
+                    ]);
+
+                Log::info('Updated schedules for class_id and subject_id at ' . now(), [
+                    'old_class_id' => $oldClassId,
+                    'old_subject_id' => $oldSubjectId,
+                    'new_class_id' => $validated['class_id'],
+                    'new_subject_id' => $validated['subject_id'],
+                    'new_teacher_id' => $validated['teacher_id'],
+                    'rows_updated' => $updatedRows
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Error updating schedules at ' . now(), [
+                    'old_class_id' => $oldClassId,
+                    'old_subject_id' => $oldSubjectId,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                return back()->withErrors(['schedule_update' => 'Lỗi khi cập nhật lịch học: ' . $e->getMessage()])->withInput();
+            }
+        }
+
+        return redirect()->route('teacher_assignments.index')->with('success', 'Phân công đã được cập nhật!');
     }
 
     /**
