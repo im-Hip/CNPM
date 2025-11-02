@@ -38,10 +38,38 @@
 <script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tsparticles-preset-snow@2/tsparticles.preset.snow.bundle.min.js"></script>
 <script>
-    let snowEnabled = true;
+    // Hàm lưu/đọc cookie
+    function setCookie(name, value, days) {
+        const expires = new Date();
+        expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+        document.cookie = name + '=' + value + ';expires=' + expires.toUTCString() + ';path=/';
+    }
+
+    function getCookie(name) {
+        const nameEQ = name + '=';
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    // Đọc trạng thái từ cookie (mặc định là bật)
+    let snowEnabled = getCookie('snowEnabled') !== 'false';
     let particlesInstance;
 
     document.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('snow-container-global');
+        const btn = document.getElementById('toggle-snow-btn');
+
+        // Áp dụng trạng thái đã lưu khi load trang
+        if (!snowEnabled) {
+            container.style.display = 'none';
+            btn.textContent = '❄️ Bật tuyết';
+        }
+
         (async () => {
             particlesInstance = await tsParticles.load({
                 id: "snow-container-global",
@@ -87,9 +115,11 @@
         })();
 
         // Xử lý sự kiện click nút
-        document.getElementById('toggle-snow-btn').addEventListener('click', function() {
+        btn.addEventListener('click', function() {
             snowEnabled = !snowEnabled;
-            const container = document.getElementById('snow-container-global');
+            
+            // Lưu trạng thái vào cookie (tồn tại 30 ngày)
+            setCookie('snowEnabled', snowEnabled, 30);
             
             if (snowEnabled) {
                 container.style.display = 'block';
