@@ -13,7 +13,7 @@
         </div>
     @endif
 
-    <div class="mb-6">
+    <div class="mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <a href="{{ route('teacher_assignments.create') }}" 
            class="inline-block px-6 py-3 rounded-lg text-white font-semibold
                   duration-200 transform hover:scale-105
@@ -23,6 +23,21 @@
                 Phân Công Mới
             </span>
         </a>
+        
+        <!-- Dropdown lọc theo lớp -->
+        <div class="w-auto">
+            <label for="filter_class_id" class="block text-sm font-medium text-gray-700 mb-1">
+                Lọc theo lớp:
+            </label>
+            <select id="filter_class_id" class="w-48 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                <option value="">Tất cả các lớp</option>
+                @foreach($classes as $class)
+                    <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>
+                        {{ $class->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
     </div>
 
     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -187,12 +202,40 @@
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterClassId = document.getElementById('filter_class_id');
+
+        filterClassId?.addEventListener('change', function() {
+            const classId = this.value;
+            const url = new URL(window.location);
+            if (classId) {
+                url.searchParams.set('class_id', classId);
+            } else {
+                url.searchParams.delete('class_id');
+            }
+            window.location = url.toString();
+        });
+
+        // Lấy class_id từ URL nếu có và chọn mặc định
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlClassId = urlParams.get('class_id');
+        if (urlClassId) {
+            filterClassId.value = urlClassId;
+        }
+    });
+</script>
+
 <style>
     @media (max-width: 768px) {
         .container {
             padding-left: 0.5rem;
             padding-right: 0.5rem;
         }
+    }
+
+    .flex.flex-col.sm:flex-row.items-center.justify-between.gap-4 {
+        flex-wrap: wrap;
     }
 
     button:hover, a:hover {

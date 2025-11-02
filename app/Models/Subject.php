@@ -37,10 +37,4 @@ class Subject extends Model
         'teacher_id'   // Foreign key trên teacher_assignments
     );
     }
-
-    // Relationship với teacher_assignments
-    public function teacher_assignments()
-    {
-        return $this->hasMany(TeacherAssignment::class, 'subject_id');
-    }
 }

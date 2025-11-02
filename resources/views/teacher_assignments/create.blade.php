@@ -3,7 +3,6 @@
 @section('title', 'Phân công giáo viên')
 
 @section('content')
-
     <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-center pt-4 sm:pt-6 lg:pt-8" 
         style="color: #1e3a8a;">
         Phân Công Giáo Viên Mới
@@ -74,6 +73,9 @@
                     @error('class_id')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
+                    @error('duplicate')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
                 
                 <div class="mb-6">
@@ -110,6 +112,26 @@
                               class="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                               placeholder="Nhập ghi chú (không bắt buộc)">{{ old('note') }}</textarea>
                     <p class="text-xs text-gray-500 mt-1">Tối đa 255 ký tự</p>
+                    @error('note')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-6">
+                    <label for="status" 
+                           class="block text-sm font-extrabold text-gray-800 mb-2">
+                        Trạng thái <span class="text-red-500">*</span>
+                    </label>
+                    <select name="status" 
+                            id="status"
+                            class="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                            required>
+                        <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                    </select>
+                    @error('status')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
@@ -159,8 +181,9 @@
             const teacher = document.getElementById('teacher_id').value;
             const classId = document.getElementById('class_id').value;
             const subject = document.getElementById('subject_id').value;
+            const status = document.getElementById('status').value;
             
-            if (!teacher || !classId || !subject) {
+            if (!teacher || !classId || !subject || !status) {
                 e.preventDefault();
                 alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
             }
