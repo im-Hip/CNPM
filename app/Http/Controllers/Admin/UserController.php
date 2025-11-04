@@ -10,19 +10,27 @@ use App\Models\Teacher;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with(['teacher', 'student'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        // Loại bỏ admin
+        $query = User::where('role', '!=', 'admin');
+
+        // Chỉ lọc khi role thực sự có giá trị hợp lệ
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        $users = $query->paginate(10);
 
         return view('admin.users.index', compact('users'));
     }
+
     public function create()
     {
         // Tạo teacher_id unique
@@ -67,8 +75,8 @@ class UserController extends Controller
                 // ✅ THÊM VALIDATION CHO TEACHER_ID
                 $request->validate([
                     'teacher_id' => [
-                        'required', 
-                        'string', 
+                        'required',
+                        'string',
                         'unique:teachers,teacher_id', // Đảm bảo unique mã GV
                         "regex:/^GV\\d{3}$/" // Format GV001, GV002...
                     ],
@@ -87,8 +95,8 @@ class UserController extends Controller
                 // ✅ THÊM VALIDATION CHO STUDENT_ID
                 $request->validate([
                     'student_id' => [
-                        'required', 
-                        'string', 
+                        'required',
+                        'string',
                         'unique:students,student_id', // Đảm bảo unique mã HS
                         "regex:/^SV\\d{4}$/" // Format SV0001, SV0002...
                     ],
@@ -130,5 +138,43 @@ class UserController extends Controller
                 ->with('error', 'Error: ' . $e->getMessage())
                 ->withInput();
         }
+    }
+
+    public function edit(User $user)
+    {
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'Không thể sửa thông tin tài khoản admin!');
+        }
+
+        return view('admin.users.edit', compact('user'));
+    }
+
+    public function update(Request $request, User $user)
+    {
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'Không thể cập nhật tài khoản admin!');
+        }
+
+        $user->update($request->all());
+        return redirect()->route('admin.users.index')->with('success', 'Cập nhật tài khoản thành công');
+    }
+
+    public function destroy(User $user)
+    {
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'Không thể xoá tài khoản admin!');
+        }
+
+        if (Auth::user()->id === $user->id) {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'Bạn không thể xoá tài khoản của chính mình!');
+        }
+
+        $user->delete();
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Xoá người dùng thành công!');
     }
 }
