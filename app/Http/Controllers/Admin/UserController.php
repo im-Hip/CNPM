@@ -19,6 +19,8 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $selectedRole = $request->role ?? '';
+        $selectedClass = $request->class_id ?? '';
+        $selectedSubject = $request->subject_id ?? '';
 
         $query = User::where('role', '!=', 'admin');
 
@@ -26,14 +28,28 @@ class UserController extends Controller
             $query->where('role', $selectedRole);
         }
 
-        // Nếu lọc là giáo viên thì đếm số lớp
+        if ($selectedRole === 'student') {
+            $query->whereHas('student', function ($q) use ($selectedClass) {
+                if ($selectedClass) {
+                    $q->where('class_id', $selectedClass);
+                }
+            });
+        }
+
         if ($selectedRole === 'teacher') {
-            $query->withCount('classes');
+            $query->whereHas('teacher', function ($q) use ($selectedSubject) {
+                if ($selectedSubject) {
+                    $q->where('subject_id', $selectedSubject);
+                }
+            })->withCount('classes');
         }
 
         $users = $query->paginate(10);
 
-        return view('admin.users.index', compact('users', 'selectedRole'));
+        $classes = Classes::all();
+        $subjects = Subject::all();
+
+        return view('admin.users.index', compact('users', 'selectedRole', 'selectedClass', 'selectedSubject', 'classes', 'subjects'));
     }
 
 

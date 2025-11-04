@@ -10,13 +10,37 @@
         <a href="{{ route('admin.users.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded">+ Thêm người dùng</a>
 
         <!-- Bộ lọc vai trò -->
-        <form method="GET" action="{{ route('admin.users.index') }}" class="float-right mb-4">
-            <label for="role">Lọc theo vai trò:</label>
-            <select name="role" id="role" onchange="this.form.submit()" class="border px-2 py-1 rounded">
+        <form method="GET" action="{{ route('admin.users.index') }}" class="flex gap-4 mb-6">
+            {{-- Bộ lọc role --}}
+            <select name="role" id="role" class="border px-3 py-1 rounded" onchange="this.form.submit()">
                 <option value="">Tất cả</option>
                 <option value="student" {{ request('role') === 'student' ? 'selected' : '' }}>Học sinh</option>
                 <option value="teacher" {{ request('role') === 'teacher' ? 'selected' : '' }}>Giáo viên</option>
             </select>
+
+            {{-- Nếu chọn học sinh thì hiện bộ lọc lớp --}}
+            @if($selectedRole === 'student')
+            <select name="class_id" class="border px-3 py-1 rounded" onchange="this.form.submit()">
+                <option value="">Tất cả lớp</option>
+                @foreach($classes as $class)
+                <option value="{{ $class->id }}" {{ $selectedClass == $class->id ? 'selected' : '' }}>
+                    {{ $class->name }}
+                </option>
+                @endforeach
+            </select>
+            @endif
+
+            {{-- Nếu chọn giáo viên thì hiện bộ lọc môn --}}
+            @if($selectedRole === 'teacher')
+            <select name="subject_id" class="border px-3 py-1 rounded" onchange="this.form.submit()">
+                <option value="">Tất cả môn</option>
+                @foreach($subjects as $subject)
+                <option value="{{ $subject->id }}" {{ $selectedSubject == $subject->id ? 'selected' : '' }}>
+                    {{ $subject->name }}
+                </option>
+                @endforeach
+            </select>
+            @endif
         </form>
     </div>
 
@@ -66,7 +90,7 @@
                     @endif
                 </td>
                 <td class="p-2 border">{{ $user->email }}</td>
-                
+
                 @if($selectedRole === 'student')
                 <td class="p-2 border">{{ $user->student->day_of_birth ?? '—' }}</td>
                 <td class="p-2 border">{{ $user->student->gender ?? '—' }}</td>
