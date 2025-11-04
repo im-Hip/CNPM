@@ -33,7 +33,21 @@
                 <th class="p-2 border">Tên</th>
                 <th class="p-2 border">Mã</th>
                 <th class="p-2 border">Email</th>
+
+                @if($selectedRole === 'student')
+                <th class="p-2 border">Năm sinh</th>
+                <th class="p-2 border">Giới tính</th>
+                <th class="p-2 border">Lớp</th>
+
+                @elseif($selectedRole === 'teacher')
+                <th class="p-2 border">Môn dạy</th>
+                <th class="p-2 border">Bằng cấp</th>
+                <th class="p-2 border">Số lớp phụ trách</th>
+
+                @else
                 <th class="p-2 border">Vai trò</th>
+
+                @endif
                 <th class="p-2 border">Thao tác</th>
             </tr>
         </thead>
@@ -44,15 +58,29 @@
                 <td class="p-2 border">{{ $user->name }}</td>
                 <td class="p-2 border">
                     @if($user->role === 'teacher')
-                        {{ $user->teacher->teacher_id ?? '-'}}
+                    {{ $user->teacher->teacher_id ?? '-'}}
                     @elseif($user->role === 'student')
-                        {{ $user->student->student_id ?? '-'}}
+                    {{ $user->student->student_id ?? '-'}}
                     @else
-                        -
+                    -
                     @endif
                 </td>
                 <td class="p-2 border">{{ $user->email }}</td>
+                
+                @if($selectedRole === 'student')
+                <td class="p-2 border">{{ $user->student->day_of_birth ?? '—' }}</td>
+                <td class="p-2 border">{{ $user->student->gender ?? '—' }}</td>
+                <td class="p-2 border">{{ $user->student->class->name ?? '—' }}</td>
+
+                @elseif($selectedRole === 'teacher')
+                <td class="p-2 border">{{ $user->teacher->subject->name ?? '—' }}</td>
+                <td class="p-2 border">{{ $user->teacher->level ?? '—' }}</td>
+                <td class="p-2 border">{{ $user->classes_count ?? '—' }}</td>
+
+                @else
                 <td class="p-2 border">{{ ucfirst($user->role) }}</td>
+                @endif
+
                 <td class="p-2 border">
                     @if($user->role !== 'admin')
                     <a href="{{ route('admin.users.edit', $user) }}" class="text-blue-600">Sửa</a> |

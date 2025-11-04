@@ -18,18 +18,24 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        // Loại bỏ admin
+        $selectedRole = $request->role ?? '';
+
         $query = User::where('role', '!=', 'admin');
 
-        // Chỉ lọc khi role thực sự có giá trị hợp lệ
-        if ($request->filled('role')) {
-            $query->where('role', $request->role);
+        if ($selectedRole !== '') {
+            $query->where('role', $selectedRole);
+        }
+
+        // Nếu lọc là giáo viên thì đếm số lớp
+        if ($selectedRole === 'teacher') {
+            $query->withCount('classes');
         }
 
         $users = $query->paginate(10);
 
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index', compact('users', 'selectedRole'));
     }
+
 
     public function create()
     {
