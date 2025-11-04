@@ -92,6 +92,8 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
 // Teacher Assignment routes (admin only – resource đầy đủ)
 Route::middleware(['auth', 'isAdmin'])->group(function () {
     Route::resource('teacher_assignments', TeacherAssignmentController::class);
+    Route::get('/teacher-assignments/teacher/{teacherId}/subject', [TeacherAssignmentController::class, 'getTeacherSubject'])
+    ->name('teacher_assignments.get_teacher_subject');
 });
 
 // Logout (custom – không conflict với auth.php)
