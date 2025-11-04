@@ -74,4 +74,9 @@ class User extends Authenticatable
     public function schedules() {  // Cho teacher
         return $this->hasManyThrough(Schedule::class, Teacher::class, 'id', 'teacher_id');
     }
+
+    public function classes() {
+        return $this->belongsToMany(Classes::class, 'teacher_assignments', 'teacher_id', 'class_id', 'id', 'id')
+            ->using(Teacher::class);
+    }
 }

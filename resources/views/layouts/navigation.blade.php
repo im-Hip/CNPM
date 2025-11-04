@@ -64,7 +64,7 @@
         </li>
 
         <li>
-            <a href="{{ route('admin.users.create') }}"
+            <a href="{{ route('admin.users.index') }}"
                 class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 group relative overflow-hidden
                    {{ str_contains($currentRoute, 'admin.users') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50' }}">
                 <span class="absolute inset-0 w-full h-full transition-all duration-500 transform translate-x-[-100%] group-hover:translate-x-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"></span>
