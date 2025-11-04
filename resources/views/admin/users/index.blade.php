@@ -5,7 +5,7 @@
 @section('content')
 <div class="max-w-7xl mx-auto py-10 px-6">
     <h1 class="text-3xl font-bold mb-6 text-center" style="color:#1e3a8a;">
-        Quản lý người dùng
+        Danh sách người dùng
     </h1>
 
     <!-- Thanh công cụ -->
