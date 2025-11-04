@@ -152,8 +152,7 @@ class UserController extends Controller
                 Classes::where('id', $request->class_id)->increment('number_of_students');
             }
 
-            return redirect()->route('admin.users.create') // ✅ Thay vì quay lại create
-                ->with('success', 'Tạo tài khoản thành công.');
+            return redirect()->route('admin.users.index')->with('success', 'Tạo người dùng thành công!');
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Xử lý validation error riêng
             return redirect()->back()
@@ -207,19 +206,59 @@ class UserController extends Controller
 
         // Nếu là giáo viên
         if ($user->role === 'teacher') {
-            $user->teacher()->update([
-                'subject_id' => $request->subject_id,
-                'level' => $request->level,
-            ]);
+            $teacher = $user->teacher; // Quan hệ 1-1 với bảng Teacher
+
+            if ($teacher) {
+                // Kiểm tra xem giáo viên có đang phụ trách lớp nào không
+                $hasClasses = $teacher->classes()->exists();
+
+                // Nếu có lớp và subject_id bị thay đổi -> không cho phép
+                if ($hasClasses && $request->subject_id != $teacher->subject_id) {
+                    return back()->with('error', 'Không thể thay đổi môn dạy vì giáo viên này đang phụ trách lớp.');
+                }
+
+                // Nếu không vi phạm, cho phép cập nhật thông tin giáo viên
+                $teacher->update([
+                    'subject_id' => $request->subject_id,
+                    'level' => $request->level,
+                ]);
+            }
         }
 
         // Nếu là học sinh
         if ($user->role === 'student') {
-            $user->student()->update([
-                'class_id' => $request->class_id,
-                'gender' => $request->gender,
-                'day_of_birth' => $request->day_of_birth,
-            ]);
+            $student = $user->student;
+
+            if ($student) {
+                // Nếu đổi sang lớp khác
+                if ($request->class_id && $request->class_id != $student->class_id) {
+                    $oldClass = $student->class; // lớp cũ của học sinh
+                    $newClass = Classes::find($request->class_id); // lớp mới
+
+                    if ($newClass) {
+                        // Kiểm tra lớp mới có đủ 50 học sinh chưa
+                        if ($newClass->number_of_students >= 50) {
+                            return back()
+                                ->withErrors(['class_id' => "Lớp {$newClass->name} đã đủ 50 học sinh, không thể chuyển thêm."])
+                                ->withInput();
+                        }
+
+                        // Nếu có cột number_of_students trong bảng classes → cập nhật
+                        if ($oldClass && $oldClass->number_of_students > 0) {
+                            $oldClass->decrement('number_of_students');
+                        }
+
+                        $newClass->increment('number_of_students');
+                    }
+                }
+
+                // Cập nhật thông tin học sinh
+                $student->update([
+                    'class_id' => $request->class_id,
+                    'gender' => $request->gender,
+                    'day_of_birth' => $request->day_of_birth,
+                ]);
+            }
         }
 
         return redirect()->route('admin.users.index')->with('success', 'Cập nhật người dùng thành công!');
@@ -227,18 +266,18 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.users.index')
-                ->with('error', 'Không thể xoá tài khoản admin!');
-        }
+        if ($user->role === 'student') {
+            $student = $user->student;
 
-        if (Auth::user()->id === $user->id) {
-            return redirect()->route('admin.users.index')
-                ->with('error', 'Bạn không thể xoá tài khoản của chính mình!');
+            if ($student && $student->class) {
+                $student->class->decrement('number_of_students'); // Giảm 1 khi xóa học sinh
+            }
+
+            $student?->delete();
         }
 
         $user->delete();
-        return redirect()->route('admin.users.index')
-            ->with('success', 'Xoá người dùng thành công!');
+
+        return back()->with('success', 'Xóa người dùng thành công!');
     }
 }

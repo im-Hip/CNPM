@@ -92,13 +92,59 @@
                 <td class="p-2 border">{{ $user->email }}</td>
 
                 @if($selectedRole === 'student')
-                <td class="p-2 border">{{ $user->student->day_of_birth ?? '—' }}</td>
-                <td class="p-2 border">{{ $user->student->gender ?? '—' }}</td>
+                <td class="p-2 border">
+                    {{ $user->student && $user->student->day_of_birth 
+        ? \Carbon\Carbon::parse($user->student->day_of_birth)->format('d-m-Y') 
+        : '—' }}
+                </td>
+                <td class="p-2 border">
+                    @if($user->student && $user->student->gender)
+                    {{ $user->student->gender === 'male' ? 'Nam' : ($user->student->gender === 'female' ? 'Nữ' : '—') }}
+                    @else
+                    —
+                    @endif
+                </td>
                 <td class="p-2 border">{{ $user->student->class->name ?? '—' }}</td>
 
                 @elseif($selectedRole === 'teacher')
-                <td class="p-2 border">{{ $user->teacher->subject->name ?? '—' }}</td>
-                <td class="p-2 border">{{ $user->teacher->level ?? '—' }}</td>
+                <td class="p-2 border">
+                    @php
+                    $subjectName = $user->teacher->subject->name ?? null;
+                    $translatedSubjects = [
+                    'math' => 'Toán học',
+                    'physics' => 'Vật lý',
+                    'chemistry' => 'Hóa học',
+                    'biology' => 'Sinh học',
+                    'literature' => 'Ngữ văn',
+                    'history' => 'Lịch sử',
+                    'geography' => 'Địa lý',
+                    'english' => 'Tiếng Anh',
+                    'IT' => 'Tin học',
+                    'exercise' => 'Thể dục',
+                    ];
+                    @endphp
+
+                    {{ $subjectName ? ($translatedSubjects[strtolower($subjectName)] ?? $subjectName) : '—' }}
+                </td>
+                <td class="p-2 border">
+                    @if($user->teacher && $user->teacher->level)
+                    @switch($user->teacher->level)
+                    @case('Bachelor')
+                    Cử nhân
+                    @break
+                    @case('Master')
+                    Thạc sĩ
+                    @break
+                    @case('PhD')
+                    Tiến sĩ
+                    @break
+                    @default
+                    —
+                    @endswitch
+                    @else
+                    —
+                    @endif
+                </td>
                 <td class="p-2 border">{{ $user->teacher->classes->count() ?? '—' }}</td>
 
                 @else
