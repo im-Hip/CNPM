@@ -3,171 +3,182 @@
 @section('title', 'Quản lý người dùng')
 
 @section('content')
-<div class="max-w-5xl mx-auto py-8">
-    <h1 class="text-3xl font-bold mb-6 text-center" style="color:#1e3a8a;">Danh sách người dùng</h1>
+<div class="max-w-7xl mx-auto py-10 px-6">
+    <h1 class="text-3xl font-bold mb-6 text-center" style="color:#1e3a8a;">
+        Quản lý người dùng
+    </h1>
 
+    <!-- Thanh công cụ -->
     <div class="flex justify-between items-center mb-4">
-        <a href="{{ route('admin.users.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded">+ Thêm người dùng</a>
+        <a href="{{ route('admin.users.create') }}" 
+           class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg shadow-md transition-all duration-300 hover:scale-105">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Thêm người dùng
+        </a>
 
-        <!-- Bộ lọc vai trò -->
-        <form method="GET" action="{{ route('admin.users.index') }}" class="flex gap-4 mb-6">
-            {{-- Bộ lọc role --}}
-            <select name="role" id="role" class="border px-3 py-1 rounded" onchange="this.form.submit()">
-                <option value="">Tất cả</option>
-                <option value="student" {{ request('role') === 'student' ? 'selected' : '' }}>Học sinh</option>
-                <option value="teacher" {{ request('role') === 'teacher' ? 'selected' : '' }}>Giáo viên</option>
-            </select>
+        <!-- Bộ lọc -->
+        <form method="GET" action="{{ route('admin.users.index') }}" 
+              class="flex flex-wrap gap-4 items-center bg-gray-50 px-4 py-2 rounded-lg shadow-sm border">
+            
+            {{-- Bộ lọc vai trò --}}
+            <div>
+                <label for="role" class="text-sm font-medium text-gray-700 mr-2">Vai trò:</label>
+                <select name="role" id="role" class="border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" onchange="this.form.submit()">
+                    <option value="">Tất cả</option>
+                    <option value="student" {{ request('role') === 'student' ? 'selected' : '' }}>Học sinh</option>
+                    <option value="teacher" {{ request('role') === 'teacher' ? 'selected' : '' }}>Giáo viên</option>
+                </select>
+            </div>
 
-            {{-- Nếu chọn học sinh thì hiện bộ lọc lớp --}}
+            {{-- Bộ lọc lớp nếu là học sinh --}}
             @if($selectedRole === 'student')
-            <select name="class_id" class="border px-3 py-1 rounded" onchange="this.form.submit()">
-                <option value="">Tất cả lớp</option>
-                @foreach($classes as $class)
-                <option value="{{ $class->id }}" {{ $selectedClass == $class->id ? 'selected' : '' }}>
-                    {{ $class->name }}
-                </option>
-                @endforeach
-            </select>
+            <div>
+                <label class="text-sm font-medium text-gray-700 mr-2">Lớp:</label>
+                <select name="class_id" class="border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" onchange="this.form.submit()">
+                    <option value="">Tất cả lớp</option>
+                    @foreach($classes as $class)
+                    <option value="{{ $class->id }}" {{ $selectedClass == $class->id ? 'selected' : '' }}>
+                        {{ $class->name }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
             @endif
 
-            {{-- Nếu chọn giáo viên thì hiện bộ lọc môn --}}
+            {{-- Bộ lọc môn nếu là giáo viên --}}
             @if($selectedRole === 'teacher')
-            <select name="subject_id" class="border px-3 py-1 rounded" onchange="this.form.submit()">
-                <option value="">Tất cả môn</option>
-                @foreach($subjects as $subject)
-                <option value="{{ $subject->id }}" {{ $selectedSubject == $subject->id ? 'selected' : '' }}>
-                    {{ $subject->name }}
-                </option>
-                @endforeach
-            </select>
+            <div>
+                <label class="text-sm font-medium text-gray-700 mr-2">Môn dạy:</label>
+                <select name="subject_id" class="border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" onchange="this.form.submit()">
+                    <option value="">Tất cả môn</option>
+                    @foreach($subjects as $subject)
+                    <option value="{{ $subject->id }}" {{ $selectedSubject == $subject->id ? 'selected' : '' }}>
+                        {{ $subject->name }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
             @endif
         </form>
     </div>
 
+    <!-- Thông báo -->
     @if(session('success'))
-    <div class="bg-green-100 text-green-700 p-3 mt-4 rounded">
-        {{ session('success') }}
+    <div class="mb-6 p-4 text-green-800 bg-green-100 border border-green-300 rounded-lg shadow-sm">
+        ✅ {{ session('success') }}
     </div>
     @endif
 
-    <table class="w-full mt-6 border-collapse border">
-        <thead>
-            <tr class="bg-gray-200 text-left">
-                <th class="p-2 border">Số thứ tự</th>
-                <th class="p-2 border">Tên</th>
-                <th class="p-2 border">Mã</th>
-                <th class="p-2 border">Email</th>
+    <!-- Bảng danh sách -->
+    <div class="overflow-x-auto shadow-lg rounded-lg border border-gray-200">
+        <table class="min-w-full bg-white border-collapse">
+            <thead>
+                <tr class="bg-blue-50 text-gray-700 text-sm uppercase tracking-wide">
+                    <th class="p-3 border text-center">STT</th>
+                    <th class="p-3 border">Tên</th>
+                    <th class="p-3 border">Mã</th>
+                    <th class="p-3 border">Email</th>
 
-                @if($selectedRole === 'student')
-                <th class="p-2 border">Năm sinh</th>
-                <th class="p-2 border">Giới tính</th>
-                <th class="p-2 border">Lớp</th>
-
-                @elseif($selectedRole === 'teacher')
-                <th class="p-2 border">Môn dạy</th>
-                <th class="p-2 border">Bằng cấp</th>
-                <th class="p-2 border">Số lớp phụ trách</th>
-
-                @else
-                <th class="p-2 border">Vai trò</th>
-
-                @endif
-                <th class="p-2 border">Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($users as $user)
-            <tr class="border">
-                <td class="p-2 border">{{ $users->firstItem() + $loop->index }}</td>
-                <td class="p-2 border">{{ $user->name }}</td>
-                <td class="p-2 border">
-                    @if($user->role === 'teacher')
-                    {{ $user->teacher->teacher_id ?? '-'}}
-                    @elseif($user->role === 'student')
-                    {{ $user->student->student_id ?? '-'}}
+                    @if($selectedRole === 'student')
+                        <th class="p-3 border">Ngày sinh</th>
+                        <th class="p-3 border">Giới tính</th>
+                        <th class="p-3 border">Lớp</th>
+                    @elseif($selectedRole === 'teacher')
+                        <th class="p-3 border">Môn dạy</th>
+                        <th class="p-3 border">Bằng cấp</th>
+                        <th class="p-3 border text-center">Số lớp phụ trách</th>
                     @else
-                    -
+                        <th class="p-3 border">Vai trò</th>
                     @endif
-                </td>
-                <td class="p-2 border">{{ $user->email }}</td>
+                    <th class="p-3 border text-center">Thao tác</th>
+                </tr>
+            </thead>
 
-                @if($selectedRole === 'student')
-                <td class="p-2 border">
-                    {{ $user->student && $user->student->day_of_birth 
-        ? \Carbon\Carbon::parse($user->student->day_of_birth)->format('d-m-Y') 
-        : '—' }}
-                </td>
-                <td class="p-2 border">
-                    @if($user->student && $user->student->gender)
-                    {{ $user->student->gender === 'male' ? 'Nam' : ($user->student->gender === 'female' ? 'Nữ' : '—') }}
+            <tbody class="text-gray-800">
+                @forelse ($users as $user)
+                <tr class="hover:bg-gray-50 transition duration-150">
+                    <td class="p-3 border text-center font-medium">{{ $users->firstItem() + $loop->index }}</td>
+                    <td class="p-3 border font-semibold">{{ $user->name }}</td>
+                    <td class="p-3 border">
+                        @if($user->role === 'teacher')
+                            {{ $user->teacher->teacher_id ?? '-' }}
+                        @elseif($user->role === 'student')
+                            {{ $user->student->student_id ?? '-' }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td class="p-3 border">{{ $user->email }}</td>
+
+                    @if($selectedRole === 'student')
+                    <td class="p-3 border">
+                        {{ $user->student && $user->student->day_of_birth 
+                            ? \Carbon\Carbon::parse($user->student->day_of_birth)->format('d-m-Y') 
+                            : '—' }}
+                    </td>
+                    <td class="p-3 border">
+                        @if($user->student && $user->student->gender)
+                            {{ $user->student->gender === 'male' ? 'Nam' : ($user->student->gender === 'female' ? 'Nữ' : '—') }}
+                        @else
+                            —
+                        @endif
+                    </td>
+                    <td class="p-3 border">{{ $user->student->class->name ?? '—' }}</td>
+
+                    @elseif($selectedRole === 'teacher')
+                    <td class="p-3 border">
+                        @php
+                            $subjectName = $user->teacher->subject->name ?? null;
+                            $translatedSubjects = [
+                                'math' => 'Toán học', 'physics' => 'Vật lý', 'chemistry' => 'Hóa học',
+                                'biology' => 'Sinh học', 'literature' => 'Ngữ văn', 'history' => 'Lịch sử',
+                                'geography' => 'Địa lý', 'english' => 'Tiếng Anh', 'it' => 'Tin học', 'exercise' => 'Thể dục'
+                            ];
+                        @endphp
+                        {{ $subjectName ? ($translatedSubjects[strtolower($subjectName)] ?? $subjectName) : '—' }}
+                    </td>
+                    <td class="p-3 border">
+                        @switch($user->teacher->level ?? '')
+                            @case('Bachelor') Cử nhân @break
+                            @case('Master') Thạc sĩ @break
+                            @case('PhD') Tiến sĩ @break
+                            @default —
+                        @endswitch
+                    </td>
+                    <td class="p-3 border text-center">{{ $user->teacher->classes->count() ?? '—' }}</td>
+
                     @else
-                    —
+                    <td class="p-3 border">{{ ucfirst($user->role) }}</td>
                     @endif
-                </td>
-                <td class="p-2 border">{{ $user->student->class->name ?? '—' }}</td>
 
-                @elseif($selectedRole === 'teacher')
-                <td class="p-2 border">
-                    @php
-                    $subjectName = $user->teacher->subject->name ?? null;
-                    $translatedSubjects = [
-                    'math' => 'Toán học',
-                    'physics' => 'Vật lý',
-                    'chemistry' => 'Hóa học',
-                    'biology' => 'Sinh học',
-                    'literature' => 'Ngữ văn',
-                    'history' => 'Lịch sử',
-                    'geography' => 'Địa lý',
-                    'english' => 'Tiếng Anh',
-                    'IT' => 'Tin học',
-                    'exercise' => 'Thể dục',
-                    ];
-                    @endphp
+                    <td class="p-3 border text-center">
+                        @if($user->role !== 'admin')
+                        <div class="flex justify-center gap-3">
+                            <a href="{{ route('admin.users.edit', $user) }}" 
+                               class="text-blue-600 hover:text-blue-800 font-medium">Sửa</a>
+                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-800 font-medium">Xóa</button>
+                            </form>
+                        </div>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="10" class="p-6 text-center text-gray-500">Không có người dùng nào phù hợp.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
-                    {{ $subjectName ? ($translatedSubjects[strtolower($subjectName)] ?? $subjectName) : '—' }}
-                </td>
-                <td class="p-2 border">
-                    @if($user->teacher && $user->teacher->level)
-                    @switch($user->teacher->level)
-                    @case('Bachelor')
-                    Cử nhân
-                    @break
-                    @case('Master')
-                    Thạc sĩ
-                    @break
-                    @case('PhD')
-                    Tiến sĩ
-                    @break
-                    @default
-                    —
-                    @endswitch
-                    @else
-                    —
-                    @endif
-                </td>
-                <td class="p-2 border">{{ $user->teacher->classes->count() ?? '—' }}</td>
-
-                @else
-                <td class="p-2 border">{{ ucfirst($user->role) }}</td>
-                @endif
-
-                <td class="p-2 border">
-                    @if($user->role !== 'admin')
-                    <a href="{{ route('admin.users.edit', $user) }}" class="text-blue-600">Sửa</a> |
-                    <form action="{{ route('admin.users.destroy', $user) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-600" onclick="return confirm('Xóa người dùng này?')">Xóa</button>
-                    </form>
-                    @endif
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <div class="mt-4">
-        {{ $users->appends(request()->query())->links() }}
+    <!-- Phân trang -->
+    <div class="mt-6 flex justify-center">
+        {{ $users->appends(request()->query())->links('pagination::tailwind') }}
     </div>
 </div>
 @endsection
