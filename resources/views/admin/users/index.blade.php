@@ -99,7 +99,7 @@
                 @elseif($selectedRole === 'teacher')
                 <td class="p-2 border">{{ $user->teacher->subject->name ?? '—' }}</td>
                 <td class="p-2 border">{{ $user->teacher->level ?? '—' }}</td>
-                <td class="p-2 border">{{ $user->classes_count ?? '—' }}</td>
+                <td class="p-2 border">{{ $user->teacher->classes->count() ?? '—' }}</td>
 
                 @else
                 <td class="p-2 border">{{ ucfirst($user->role) }}</td>

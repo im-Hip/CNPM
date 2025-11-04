@@ -41,7 +41,11 @@ class UserController extends Controller
                 if ($selectedSubject) {
                     $q->where('subject_id', $selectedSubject);
                 }
-            })->withCount('classes');
+            })
+                ->with(['teacher.classes'])
+                ->join('teachers', 'users.id', '=', 'teachers.id') // nối bảng teacher
+                ->orderBy('teachers.teacher_id', 'asc')               // sắp xếp theo mã GV
+                ->select('users.*');                                    // tránh xung đột cột khi join
         }
 
         $users = $query->paginate(10);
@@ -164,23 +168,61 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.users.index')
-                ->with('error', 'Không thể sửa thông tin tài khoản admin!');
-        }
+        // Lấy danh sách lớp và môn để hiển thị tùy theo role
+        $classes = Classes::all();
+        $subjects = Subject::all();
 
-        return view('admin.users.edit', compact('user'));
+        // Nếu là giáo viên, lấy thông tin từ bảng teachers
+        $teacherInfo = $user->role === 'teacher' ? $user->teacher : null;
+        // Nếu là học sinh, lấy thông tin từ bảng students
+        $studentInfo = $user->role === 'student' ? $user->student : null;
+
+        return view('admin.users.edit', compact('user', 'classes', 'subjects', 'teacherInfo', 'studentInfo'));
     }
 
     public function update(Request $request, User $user)
     {
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.users.index')
-                ->with('error', 'Không thể cập nhật tài khoản admin!');
+        // Validate dữ liệu
+        $rules = [
+            'name' => 'required|string|max:255',
+            'email' => "required|email|unique:users,email,{$user->id}",
+        ];
+
+        // Nếu có mật khẩu thì validate thêm
+        if ($request->filled('password')) {
+            $rules['password'] = 'min:8|confirmed';
         }
 
-        $user->update($request->all());
-        return redirect()->route('admin.users.index')->with('success', 'Cập nhật tài khoản thành công');
+        $validated = $request->validate($rules);
+
+        // Cập nhật thông tin user
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+
+        if ($request->filled('password')) {
+            $user->password = bcrypt($validated['password']);
+        }
+
+        $user->save();
+
+        // Nếu là giáo viên
+        if ($user->role === 'teacher') {
+            $user->teacher()->update([
+                'subject_id' => $request->subject_id,
+                'level' => $request->level,
+            ]);
+        }
+
+        // Nếu là học sinh
+        if ($user->role === 'student') {
+            $user->student()->update([
+                'class_id' => $request->class_id,
+                'gender' => $request->gender,
+                'day_of_birth' => $request->day_of_birth,
+            ]);
+        }
+
+        return redirect()->route('admin.users.index')->with('success', 'Cập nhật người dùng thành công!');
     }
 
     public function destroy(User $user)
