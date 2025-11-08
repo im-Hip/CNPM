@@ -79,27 +79,23 @@
                 </div>
                 
                 <div class="mb-6">
-                    <label for="subject_id" 
+                    <label for="subject_name" 
                            class="block text-sm font-extrabold text-gray-800 mb-2">
                         Môn học <span class="text-red-500">*</span>
                     </label>
-                    <select name="subject_id" 
-                            id="subject_id"
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                            required>
-                        <option value="">-- Chọn môn học --</option>
-                        @foreach($subjects as $subject)
-                            <option value="{{ $subject->id }}" 
-                                    {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
-                                {{ $subject->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <input type="text" 
+                           id="subject_name"
+                           class="w-full px-4 py-2.5 border border-gray-300 rounded-md bg-gray-50 cursor-not-allowed focus:outline-none"
+                           placeholder="-- Chọn giáo viên trước --"
+                           readonly
+                           disabled>
+                    <input type="hidden" name="subject_id" id="subject_id_hidden" value="{{ old('subject_id') }}">
+                    <p class="text-xs text-gray-500 mt-1">Môn học sẽ tự động được điền theo giáo viên đã chọn</p>
                     @error('subject_id')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-                
+
                 <div class="mb-6">
                     <label for="note" 
                            class="block text-sm font-extrabold text-gray-800 mb-2">
@@ -168,26 +164,69 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+        // Xử lý khi chọn giáo viên
         document.getElementById('teacher_id')?.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            if (selectedOption.value) {
-                console.log('Giáo viên được chọn:', selectedOption.text);
+            const teacherId = this.value;
+            const subjectInput = document.getElementById('subject_name');
+            const subjectHidden = document.getElementById('subject_id_hidden');
+            
+            if (!teacherId) {
+                subjectInput.value = '';
+                subjectInput.placeholder = '-- Chọn giáo viên trước --';
+                subjectInput.disabled = true;
+                subjectHidden.value = '';
+                return;
             }
+            
+            // Hiển thị loading
+            subjectInput.value = 'Đang tải...';
+            subjectInput.disabled = true;
+            
+            // Gọi API lấy môn của giáo viên
+            axios.get(`/teacher-assignments/teacher/${teacherId}/subject`)
+                .then(response => {
+                    if (response.data.success) {
+                        const subject = response.data.subject;
+                        subjectInput.value = subject.name;
+                        subjectHidden.value = subject.id;
+                        subjectInput.disabled = false;
+                    } else {
+                        subjectInput.value = '';
+                        subjectInput.placeholder = 'Giáo viên chưa được phân môn';
+                        subjectHidden.value = '';
+                        alert('Giáo viên này chưa được phân môn. Vui lòng chọn giáo viên khác!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    subjectInput.value = '';
+                    subjectInput.placeholder = 'Lỗi khi tải môn học';
+                    subjectHidden.value = '';
+                    alert('Có lỗi xảy ra khi tải thông tin môn học!');
+                });
         });
-
+    
+        // Validation form
         const form = document.querySelector('form');
         form?.addEventListener('submit', function(e) {
             const teacher = document.getElementById('teacher_id').value;
             const classId = document.getElementById('class_id').value;
-            const subject = document.getElementById('subject_id').value;
+            const subject = document.getElementById('subject_id_hidden').value;
             const status = document.getElementById('status').value;
             
             if (!teacher || !classId || !subject || !status) {
                 e.preventDefault();
                 alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                return false;
             }
         });
+        
+        // Khôi phục môn học nếu có old value (khi validation fail)
+        @if(old('teacher_id'))
+            document.getElementById('teacher_id').dispatchEvent(new Event('change'));
+        @endif
     </script>
 
     <style>

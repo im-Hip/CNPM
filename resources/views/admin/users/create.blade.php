@@ -231,6 +231,12 @@
                             style="background-color: #2563eb; padding: 0.7rem; min-width: 100px; display: inline-block;">
                         Tạo
                     </button>
+
+                    <a href="{{ route('admin.users.index') }}" 
+                       class="text-white font-bold rounded transition-colors"
+                       style="background-color: #6b7280; padding: 0.7rem; min-width: 100px; display: inline-block; text-align: center;">
+                        Hủy
+                    </a>
                 </div>
             </form>
         </div>

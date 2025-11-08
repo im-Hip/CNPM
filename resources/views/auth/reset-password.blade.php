@@ -85,6 +85,40 @@
                     <p class="mt-2 text-sm text-red-500 animate-shake" style="font-family: 'Roboto', 'Noto Sans', system-ui, -apple-system, sans-serif;">{{ $message }}</p>
                 @enderror
             </div>
+
+            <!-- Password Strength Suggestions -->
+            <div id="password-suggestions" class="mt-3 space-y-2 hidden">
+                <div class="flex items-start space-x-2 text-sm">
+                    <svg id="check-length" class="w-4 h-4 mt-0.5 flex-shrink-0 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <span id="text-length" class="text-red-500" style="font-family: 'Roboto', 'Noto Sans', system-ui, -apple-system, sans-serif;">Tối thiểu 8 ký tự</span>
+                </div>
+                <div class="flex items-start space-x-2 text-sm">
+                    <svg id="check-uppercase" class="w-4 h-4 mt-0.5 flex-shrink-0 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <span id="text-uppercase" class="text-red-500" style="font-family: 'Roboto', 'Noto Sans', system-ui, -apple-system, sans-serif;">Ít nhất 1 chữ in hoa</span>
+                </div>
+                <div class="flex items-start space-x-2 text-sm">
+                    <svg id="check-lowercase" class="w-4 h-4 mt-0.5 flex-shrink-0 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <span id="text-lowercase" class="text-red-500" style="font-family: 'Roboto', 'Noto Sans', system-ui, -apple-system, sans-serif;">Ít nhất 1 chữ thường</span>
+                </div>
+                <div class="flex items-start space-x-2 text-sm">
+                    <svg id="check-number" class="w-4 h-4 mt-0.5 flex-shrink-0 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <span id="text-number" class="text-red-500" style="font-family: 'Roboto', 'Noto Sans', system-ui, -apple-system, sans-serif;">Ít nhất 1 chữ số</span>
+                </div>
+                <div class="flex items-start space-x-2 text-sm">
+                    <svg id="check-special" class="w-4 h-4 mt-0.5 flex-shrink-0 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <span id="text-special" class="text-red-500" style="font-family: 'Roboto', 'Noto Sans', system-ui, -apple-system, sans-serif;">Ít nhất 1 ký tự đặc biệt (!@#$%^&*)</span>
+                </div>
+            </div>
         </div>
 
         <!-- Confirm Password -->
@@ -126,6 +160,26 @@
                 @error('password_confirmation')
                     <p class="mt-2 text-sm text-red-500 animate-shake" style="font-family: 'Roboto', 'Noto Sans', system-ui, -apple-system, sans-serif;">{{ $message }}</p>
                 @enderror
+            </div>
+
+            <!-- Password Match Warning -->
+            <div id="password-match-warning" class="mt-3 hidden">
+                <div class="flex items-start space-x-2 text-sm">
+                    <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-red-500" style="font-family: 'Roboto', 'Noto Sans', system-ui, -apple-system, sans-serif;">Mật khẩu không khớp</span>
+                </div>
+            </div>
+
+            <!-- Password Match Success -->
+            <div id="password-match-success" class="mt-3 hidden">
+                <div class="flex items-start space-x-2 text-sm">
+                    <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-green-600" style="font-family: 'Roboto', 'Noto Sans', system-ui, -apple-system, sans-serif;">Mật khẩu khớp</span>
+                </div>
             </div>
         </div>
 
@@ -366,7 +420,13 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const button = document.querySelector('button[type="submit"]');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('password_confirmation');
+            const passwordSuggestions = document.getElementById('password-suggestions');
+            const passwordMatchWarning = document.getElementById('password-match-warning');
+            const passwordMatchSuccess = document.getElementById('password-match-success');
             
+            // Ripple effect
             button.addEventListener('click', function(e) {
                 const ripple = this.querySelector('.ripple');
                 const rect = this.getBoundingClientRect();
@@ -380,9 +440,8 @@
                 ripple.style.height = '10px';
             });
             
+            // Label animations
             const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
-            const confirmPasswordInput = document.getElementById('password_confirmation');
             const emailLabel = document.querySelector('label[for="email"]');
             const passwordLabel = document.querySelector('label[for="password"]');
             const confirmPasswordLabel = document.querySelector('label[for="password_confirmation"]');
@@ -422,6 +481,87 @@
                     confirmPasswordLabel.style.fontSize = '0.875rem';
                 }
             });
+
+            // Password strength validation
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                
+                if (password.length > 0) {
+                    passwordSuggestions.classList.remove('hidden');
+                    
+                    // Check length (minimum 8 characters)
+                    updateRequirement('length', password.length >= 8);
+                    
+                    // Check uppercase
+                    updateRequirement('uppercase', /[A-Z]/.test(password));
+                    
+                    // Check lowercase
+                    updateRequirement('lowercase', /[a-z]/.test(password));
+                    
+                    // Check number
+                    updateRequirement('number', /[0-9]/.test(password));
+                    
+                    // Check special character
+                    updateRequirement('special', /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password));
+                } else {
+                    passwordSuggestions.classList.add('hidden');
+                }
+                
+                // Check password match
+                checkPasswordMatch();
+            });
+
+            // Password confirmation validation
+            confirmPasswordInput.addEventListener('input', function() {
+                checkPasswordMatch();
+            });
+
+            function updateRequirement(type, isValid) {
+                const checkIcon = document.getElementById('check-' + type);
+                const textElement = document.getElementById('text-' + type);
+                
+                if (isValid) {
+                    // Valid - show green checkmark
+                    checkIcon.innerHTML = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>';
+                    checkIcon.classList.remove('text-red-500');
+                    checkIcon.classList.add('text-green-500');
+                    textElement.classList.remove('text-red-500');
+                    textElement.classList.add('text-green-600');
+                } else {
+                    // Invalid - show red X
+                    checkIcon.innerHTML = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>';
+                    checkIcon.classList.remove('text-green-500');
+                    checkIcon.classList.add('text-red-500');
+                    textElement.classList.remove('text-green-600');
+                    textElement.classList.add('text-red-500');
+                }
+            }
+
+            function checkPasswordMatch() {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                
+                if (confirmPassword.length > 0) {
+                    if (password === confirmPassword) {
+                        // Passwords match
+                        passwordMatchWarning.classList.add('hidden');
+                        passwordMatchSuccess.classList.remove('hidden');
+                        confirmPasswordInput.classList.remove('border-red-500');
+                        confirmPasswordInput.classList.add('border-green-500');
+                    } else {
+                        // Passwords don't match
+                        passwordMatchWarning.classList.remove('hidden');
+                        passwordMatchSuccess.classList.add('hidden');
+                        confirmPasswordInput.classList.remove('border-green-500');
+                        confirmPasswordInput.classList.add('border-red-500');
+                    }
+                } else {
+                    // No confirmation password entered yet
+                    passwordMatchWarning.classList.add('hidden');
+                    passwordMatchSuccess.classList.add('hidden');
+                    confirmPasswordInput.classList.remove('border-red-500', 'border-green-500');
+                }
+            }
         });
 
         function togglePassword(fieldId) {

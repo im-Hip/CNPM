@@ -195,10 +195,66 @@ class NotificationController extends Controller
     public function searchRecipients(Request $request)
     {
         $search = $request->search;
-        $role = Auth::user()->role === 'admin' ? ['teacher', 'student'] : 'student';
-        $results = User::whereIn('role', (array) $role)->where('email', 'like', '%' . $search . '%')->get(['id', 'email']);
-
-        return response()->json($results);
+        
+        // Nếu tìm kiếm ngắn hoặc không có @, trả về danh sách gợi ý
+        if (strlen($search) < 3 || !filter_var($search, FILTER_VALIDATE_EMAIL)) {
+            $role = Auth::user()->role === 'admin' ? ['teacher', 'student'] : ['student'];
+            $results = User::whereIn('role', $role)
+                ->where('email', 'like', '%' . $search . '%')
+                ->limit(10)
+                ->get(['id', 'email', 'name']);
+            
+            return response()->json([
+                'type' => 'suggestions',
+                'data' => $results
+            ]);
+        }
+        
+        // Nếu là email đầy đủ, tìm chi tiết người dùng
+        $user = User::where('email', $search)->first();
+        
+        if (!$user) {
+            return response()->json([
+                'type' => 'detail',
+                'found' => false,
+                'message' => 'Không tìm thấy người dùng với email này'
+            ]);
+        }
+        
+        // Kiểm tra role và lấy thông tin tương ứng
+        $userInfo = null;
+        
+        if ($user->role === 'teacher') {
+            $teacher = $user->teacher()->with('subject')->first();
+            if ($teacher) {
+                $userInfo = [
+                    'id' => $user->id,
+                    'email' => $user->email,
+                    'role' => 'teacher',
+                    'teacher_id' => $teacher->teacher_id,
+                    'name' => $user->name,
+                    'subject' => $teacher->subject->name ?? 'Chưa có môn'
+                ];
+            }
+        } elseif ($user->role === 'student') {
+            $student = $user->student()->with('class')->first();
+            if ($student) {
+                $userInfo = [
+                    'id' => $user->id,
+                    'email' => $user->email,
+                    'role' => 'student',
+                    'student_id' => $student->student_id,
+                    'name' => $user->name,
+                    'class' => $student->class->name ?? 'Chưa có lớp'
+                ];
+            }
+        }
+        
+        return response()->json([
+            'type' => 'detail',
+            'found' => true,
+            'user' => $userInfo
+        ]);
     }
 
     public function show($id)

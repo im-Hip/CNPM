@@ -46,13 +46,13 @@
                     <label class="block text-sm font-extrabold text-gray-800 mb-2">
                         Môn học <span class="text-red-500">*</span>
                     </label>
-                    <select name="subject_id" 
-                            id="subject-select" 
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                            required 
-                            onchange="loadTeacher()">
-                        <option value="">-- Chọn môn học --</option>
-                    </select>
+                    <input type="text" 
+                           value="{{ $schedule->subject->name ?? 'N/A' }}" 
+                           class="w-full px-4 py-2.5 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed" 
+                           readonly 
+                           placeholder="Môn học không thể thay đổi">
+                    <input type="hidden" name="subject_id" value="{{ $schedule->subject_id }}">
+                    <p class="text-xs text-gray-500 mt-1">Không thể thay đổi môn học</p>
                     @error('subject_id')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror

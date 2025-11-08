@@ -187,4 +187,27 @@ class TeacherAssignmentController extends Controller
         $teacherAssignment->delete();
         return redirect()->route('teacher_assignments.index')->with('success', 'Phân công đã xóa!');
     }
+
+    /**
+     * Lấy thông tin môn học của giáo viên
+     */
+    public function getTeacherSubject($teacherId)
+    {
+        $teacher = Teacher::with('subject')->find($teacherId);
+
+        if (!$teacher || !$teacher->subject) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Giáo viên chưa được phân môn'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'subject' => [
+                'id' => $teacher->subject->id,
+                'name' => $teacher->subject->name
+            ]
+        ]);
+    }
 }
