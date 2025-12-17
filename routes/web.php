@@ -130,5 +130,12 @@ Route::get('/exam-redirect', function () {
     return redirect('/dashboard');
 })->middleware('auth')->name('exam.redirect');
 
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok']);
+});
+
+
 // Auth routes (Breeze/Jetstream – handle login/register/logout)
 require __DIR__.'/auth.php';
+
+// test pipeline

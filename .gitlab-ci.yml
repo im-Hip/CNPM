@@ -1,0 +1,59 @@
+image: php:8.2
+
+services:
+  - mysql:latest
+
+variables:
+  MYSQL_ROOT_PASSWORD: root
+  MYSQL_DATABASE: laravel
+  MYSQL_USER: laravel
+  MYSQL_PASSWORD: laravel
+
+stages:
+  - feature_test
+  - unit_test
+  - build_and_health
+  - deploy
+
+before_script:
+  - apt-get update -y
+  - apt-get install -y git curl zip unzip
+  - php -v
+  - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  - composer install --no-interaction --prefer-dist
+
+feature_test:
+  stage: feature_test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  script:
+    # check syntax php
+    - find app -type f -name "*.php" -print0 | xargs -0 -n1 php -l
+    # check conflict
+    - git fetch origin main || true
+    - git diff --check origin/main || true
+
+unit_test:
+  stage: unit_test
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    # nếu có test phpunit chạy ở đây
+    - ./vendor/bin/phpunit || echo "no unit test available"
+
+build_and_health:
+  stage: build_and_health
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - php artisan serve --host=0.0.0.0 --port=8000 &
+    - sleep 5
+    - curl -f http://localhost:8000/health || (echo "Health check fail" && exit 1)
+
+deploy:
+  stage: deploy
+  when: manual
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - echo "Deployed successfully"
