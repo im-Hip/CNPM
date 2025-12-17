@@ -18,9 +18,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Install dependencies
 RUN composer install --optimize-autoloader --no-dev --no-interaction
 
-# Generate app key
-RUN php artisan key:generate
-
 EXPOSE 8000
 
 # Start Laravel dev server
