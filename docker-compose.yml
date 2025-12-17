@@ -1,0 +1,37 @@
+# docker-compose.yml
+services:
+  app:
+    build: .
+    container_name: laravel_app
+    ports:
+      - "8001:8000" # host port:container port
+    env_file:
+      - .env
+    depends_on:
+      - db
+    volumes:
+      - .:/var/www/html
+    networks:
+      - laravel_network
+
+  db:
+    image: mysql:8.0
+    container_name: laravel_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3307:3306" # tránh trùng XAMPP MySQL
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - laravel_network
+
+volumes:
+  dbdata:
+
+networks:
+  laravel_network:
