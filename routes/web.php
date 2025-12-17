@@ -134,6 +134,11 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok']);
 });
 
+Route::get('/favicon.ico', function () {
+    return response()->noContent();
+});
+
+
 
 // Auth routes (Breeze/Jetstream – handle login/register/logout)
 require __DIR__.'/auth.php';
