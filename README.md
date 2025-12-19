@@ -59,7 +59,7 @@ Hệ thống quản lý lịch học và thông báo là một ứng dụng web 
 
 ### Bước 1: Clone repository
 
-- git clone https://github.com/[your-username]/CNPM.git (gitbash)
+- git clone https://github.com/im-Hip/QLy_Hoc_Vu.git (gitbash)
 - cd CNPM
 
 ### Bước 2: Cài đặt PHP dependencies
