@@ -10,13 +10,15 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
+    libpq-dev \
     zip \
     unzip \
     nginx
 
-# Install PHP extensions (QUAN TRỌNG: thêm bcmath)
+# Install PHP extensions
 RUN docker-php-ext-install \
-    pdo_mysql \
+    pdo_pgsql \
+    pgsql \
     mbstring \
     exif \
     pcntl \
@@ -42,10 +44,5 @@ COPY nginx.conf /etc/nginx/sites-available/default
 # Expose port
 EXPOSE 8080
 
-# Start command
-CMD php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan migrate --force && \
-    php artisan storage:link && \
-    service nginx start && \
-    php-fpm
+# Start command (migrate sẽ chạy riêng)
+CMD service nginx start && php-fpm
