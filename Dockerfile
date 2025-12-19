@@ -44,5 +44,10 @@ COPY nginx.conf /etc/nginx/sites-available/default
 # Expose port
 EXPOSE 8080
 
-# Start command (migrate sẽ chạy riêng)
-CMD service nginx start && php-fpm
+# Start command - migrations chạy TỰ ĐỘNG
+CMD php artisan migrate --force && \
+    php artisan storage:link && \
+    php artisan config:cache && \
+    php artisan route:cache && \
+    service nginx start && \
+    php-fpm
