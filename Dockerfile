@@ -1,17 +1,44 @@
-FROM php:8.2-cli
+FROM php:8.2-fpm
 
-# Cài extension cần thiết
-RUN docker-php-ext-install pdo pdo_mysql
+WORKDIR /var/www/html
 
-# Cài composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    nginx
 
-WORKDIR /app
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy project files
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-EXPOSE 10000
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-CMD php -S 0.0.0.0:10000 -t public
+# Copy nginx config
+COPY nginx.conf /etc/nginx/sites-available/default
+
+# Expose port
+EXPOSE 8080
+
+# Start services
+CMD php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan migrate --force && \
+    php artisan storage:link && \
+    service nginx start && \
+    php-fpm
