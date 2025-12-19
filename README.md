@@ -1,6 +1,6 @@
 <div align="center">
 
-# HỆ THỐNG QUẢN LÝ LỊCH HỌC VÀ THÔNG BÁO CHO HỌC SINH
+# HỆ THỐNG QUẢN LÝ HỌC VỤ CHO HỌC SINH THPT
 
 <p align="center">
   <img src="https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
